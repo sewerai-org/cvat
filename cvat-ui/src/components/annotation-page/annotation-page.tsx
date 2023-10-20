@@ -22,6 +22,7 @@ import { Workspace } from 'reducers';
 import { usePrevious } from 'utils/hooks';
 import './styles.scss';
 import Button from 'antd/lib/button';
+import mixpanel from 'mixpanel-browser';
 
 interface Props {
     job: any | null | undefined;
@@ -48,6 +49,11 @@ export default function AnnotationPageComponent(props: Props): JSX.Element {
         if (root) {
             root.style.minHeight = '720px';
         }
+
+        mixpanel.track('Opened job page', {
+            jobId: job.jobId,
+            frameNumber,
+        });
 
         return () => {
             saveLogs();

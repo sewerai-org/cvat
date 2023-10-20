@@ -112,8 +112,9 @@ export const loginAsync = (credential: string, password: string): ThunkAction =>
         const users = await cvat.users.get({ self: true });
         if (users && users.length > 0) {
             console.log(`Setting mixpanel user: ${users[0].email}`);
-            mixpanel.people.set(users[0].email);
-            mixpanel.identify(users[0].email);
+            mixpanel.people.set(users[0].email ?? users[0].username);
+            mixpanel.identify(users[0].email ?? users[0].username);
+            mixpanel.track('Login', {});
         }
         dispatch(authActions.loginSuccess(users[0]));
     } catch (error) {
@@ -128,6 +129,7 @@ export const logoutAsync = (): ThunkAction => async (dispatch) => {
     try {
         await cvat.organizations.deactivate();
         await cvat.server.logout();
+        mixpanel.track('Logout', {});
         mixpanel.reset();
         dispatch(authActions.logoutSuccess());
     } catch (error) {
