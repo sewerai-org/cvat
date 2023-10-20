@@ -427,6 +427,12 @@ class CVATApplication extends React.PureComponent<CVATAppProps & RouteComponentP
             .filter(({ data: { shouldBeRendered } }) => shouldBeRendered(this.props, this.state))
             .map(({ component: Component }) => Component);
 
+        if (user && user.isVerified) {
+            const userId = user.email ?? user.username;
+            mixpanel.people.set(userId);
+            mixpanel.identify(userId);
+        }
+
         if (readyForRender) {
             if (user && user.isVerified) {
                 return (

@@ -11,6 +11,7 @@ import { Row, Col } from 'antd/lib/grid';
 import Spin from 'antd/lib/spin';
 import Result from 'antd/lib/result';
 import notification from 'antd/lib/notification';
+import mixpanel from 'mixpanel-browser';
 
 import { getInferenceStatusAsync } from 'actions/models-actions';
 import { getCore, Task, Job } from 'cvat-core-wrapper';
@@ -67,6 +68,9 @@ function TaskPageComponent(): JSX.Element {
         receieveTask();
         dispatch(getInferenceStatusAsync());
         mounted.current = true;
+        mixpanel.track('Opened task page', {
+            taskId: id,
+        });
         return () => {
             mounted.current = false;
         };
