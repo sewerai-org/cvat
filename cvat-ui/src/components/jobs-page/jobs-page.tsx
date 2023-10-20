@@ -17,6 +17,7 @@ import { Job } from 'cvat-core-wrapper';
 import { updateHistoryFromQuery } from 'components/resource-sorting-filtering';
 import { CombinedState, Indexable } from 'reducers';
 import { getJobsAsync, updateJobAsync } from 'actions/jobs-actions';
+import mixpanel from 'mixpanel-browser';
 
 import TopBarComponent from './top-bar';
 import JobsContentComponent from './jobs-content';
@@ -44,6 +45,7 @@ function JobsPageComponent(): JSX.Element {
     useEffect(() => {
         dispatch(getJobsAsync({ ...updatedQuery }));
         setIsMounted(true);
+        mixpanel.track('Opened jobs page', {});
     }, []);
 
     useEffect(() => {

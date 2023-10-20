@@ -15,6 +15,7 @@ import { TasksQuery, Indexable } from 'reducers';
 import { updateHistoryFromQuery } from 'components/resource-sorting-filtering';
 import TaskListContainer from 'containers/tasks-page/tasks-list';
 import { getTasksAsync } from 'actions/tasks-actions';
+import mixpanel from 'mixpanel-browser';
 
 import TopBar from './top-bar';
 import EmptyListComponent from './empty-list';
@@ -47,6 +48,7 @@ function TasksPageComponent(props: Props): JSX.Element {
     useEffect(() => {
         dispatch(getTasksAsync({ ...updatedQuery }));
         setIsMounted(true);
+        mixpanel.track('Opened tasks page', {});
     }, []);
 
     useEffect(() => {
