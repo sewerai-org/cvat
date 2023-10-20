@@ -51,7 +51,7 @@ export default function AnnotationPageComponent(props: Props): JSX.Element {
         }
 
         mixpanel.track('Opened job page', {
-            jobId: job.jobId,
+            jobId: job?.id ?? '',
             frameNumber,
         });
 
