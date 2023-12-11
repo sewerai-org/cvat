@@ -71,7 +71,8 @@ function BrushTools(props: Props): React.ReactPortal | null {
     );
 
     const shortcutHandlers = {
-        SELECT_MASK_ERASER: () => {
+        SELECT_MASK_ERASER: (event: KeyboardEvent | undefined) => {
+            if (event) event.preventDefault();
             if (currentTool === 'eraser') {
                 setCurrentTool('brush');
             } else {
