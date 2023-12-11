@@ -1071,6 +1071,10 @@ class CanvasWrapperComponent extends React.PureComponent<Props> {
             SWITCH_AUTOMATIC_BORDERING: keyMap.SWITCH_AUTOMATIC_BORDERING,
         };
 
+        const brushKeyMap = {
+            SELECT_MASK_ERASER: keyMap.SELECT_MASK_ERASER,
+        };
+
         const handlers = {
             SWITCH_AUTOMATIC_BORDERING: (event: KeyboardEvent | undefined) => {
                 if (switchableAutomaticBordering) {
@@ -1104,7 +1108,7 @@ class CanvasWrapperComponent extends React.PureComponent<Props> {
                     }}
                 />
 
-                <BrushTools />
+                <BrushTools keyMap={brushKeyMap} />
 
                 <Dropdown trigger={['click']} placement='topCenter' overlay={<ImageSetupsContent />}>
                     <UpOutlined className='cvat-canvas-image-setups-trigger' />

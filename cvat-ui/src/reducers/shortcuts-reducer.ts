@@ -435,6 +435,13 @@ const defaultKeyMap = ({
         action: 'keydown',
         applicable: [DimensionType.DIMENSION_3D],
     },
+    SELECT_MASK_ERASER: {
+        name: 'Select mask eraser',
+        description: 'Toggle between the paintbrush and the eraser on the mask brush tools',
+        sequences: ['ctrl+e'],
+        action: 'keydown',
+        applicable: [DimensionType.DIMENSION_3D],
+    },
 } as any) as KeyMap;
 
 const defaultState: ShortcutsState = {

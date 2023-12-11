@@ -16,14 +16,18 @@ import { filterApplicableForType } from 'utils/filter-applicable-labels';
 import { getCore, Label, LabelType } from 'cvat-core-wrapper';
 import { Canvas, CanvasMode } from 'cvat-canvas-wrapper';
 import {
-    BrushIcon, EraserIcon, PolygonMinusIcon, PolygonPlusIcon,
-    PlusIcon, CheckIcon, MoveIcon,
+    BrushIcon, CheckIcon, EraserIcon, MoveIcon, PlusIcon, PolygonMinusIcon, PolygonPlusIcon,
 } from 'icons';
 import CVATTooltip from 'components/common/cvat-tooltip';
 import { CombinedState, ObjectType, ShapeType } from 'reducers';
 import LabelSelector from 'components/label-selector/label-selector';
 import { rememberObject, updateCanvasBrushTools } from 'actions/annotation-actions';
 import useDraggable from './draggable-hoc';
+import GlobalHotKeys, { KeyMap } from '../../../../../utils/mousetrap-react';
+
+interface Props {
+    keyMap: KeyMap;
+}
 
 const DraggableArea = (
     <div className='cvat-brush-tools-draggable-area'>
@@ -32,7 +36,11 @@ const DraggableArea = (
 );
 
 const MIN_BRUSH_SIZE = 1;
-function BrushTools(): React.ReactPortal | null {
+
+function BrushTools(props: Props): React.ReactPortal | null {
+    const {
+        keyMap,
+    } = props;
     const dispatch = useDispatch();
     const defaultLabelID = useSelector((state: CombinedState) => state.annotation.drawing.activeLabelID);
     const config = useSelector((state: CombinedState) => state.annotation.canvas.brushTools);
@@ -61,6 +69,16 @@ function BrushTools(): React.ReactPortal | null {
         (newTop, newLeft) => setTopLeft([newTop, newLeft]),
         DraggableArea,
     );
+
+    const shortcutHandlers = {
+        SELECT_MASK_ERASER: () => {
+            if (currentTool === 'eraser') {
+                setCurrentTool('brush');
+            } else {
+                setCurrentTool('eraser');
+            }
+        },
+    };
 
     useEffect(() => {
         const label = labels.find((_label: any) => _label.id === defaultLabelID);
@@ -166,6 +184,10 @@ function BrushTools(): React.ReactPortal | null {
 
     return ReactDOM.createPortal((
         <div className='cvat-brush-tools-toolbox' style={{ top, left, display: visible ? '' : 'none' }}>
+            <GlobalHotKeys
+                keyMap={keyMap}
+                handlers={shortcutHandlers}
+            />
             <Button
                 type='text'
                 className='cvat-brush-tools-finish'
@@ -213,6 +235,7 @@ function BrushTools(): React.ReactPortal | null {
                 className={['cvat-brush-tools-eraser', ...(currentTool === 'eraser' ? ['cvat-brush-tools-active-tool'] : [])].join(' ')}
                 icon={<Icon component={EraserIcon} />}
                 onClick={() => setCurrentTool('eraser')}
+
             />
             <Button
                 type='text'
