@@ -28,12 +28,193 @@
     "liveNow": false,
     "panels": [
         {
+            "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "PDEE91DDB90597936"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "__systemRef": "hideSeriesFrom",
+                        "matcher": {
+                            "id": "byNames",
+                            "options": {
+                                "mode": "exclude",
+                                "names": [
+                                    "masks created by jtong"
+                                ],
+                                "prefix": "All except:",
+                                "readOnly": true
+                            }
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.hideFrom",
+                                "value": {
+                                    "legend": false,
+                                    "tooltip": false,
+                                    "viz": true
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 9,
+                "w": 24,
+                "x": 0,
+                "y": 0
+            },
+            "id": 33,
+            "options": {
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "pluginVersion": "9.3.6",
+            "targets": [
+                {
+                    "builderOptions": {
+                        "database": "cvat",
+                        "fields": [
+                            "scope",
+                            "obj_name",
+                            "timestamp",
+                            "user_name"
+                        ],
+                        "filters": [
+                            {
+                                "condition": "AND",
+                                "filterType": "custom",
+                                "key": "scope",
+                                "operator": "=",
+                                "type": "String",
+                                "value": "create:shapes"
+                            },
+                            {
+                                "condition": "AND",
+                                "filterType": "custom",
+                                "key": "obj_name",
+                                "operator": "=",
+                                "type": "Nullable(String)",
+                                "value": "mask"
+                            }
+                        ],
+                        "limit": 100,
+                        "mode": "list",
+                        "orderBy": [],
+                        "table": "events"
+                    },
+                    "datasource": {
+                        "type": "grafana-clickhouse-datasource",
+                        "uid": "PDEE91DDB90597936"
+                    },
+                    "format": 0,
+                    "meta": {
+                        "builderOptions": {
+                            "database": "cvat",
+                            "fields": [
+                                "scope",
+                                "obj_name",
+                                "timestamp",
+                                "user_name"
+                            ],
+                            "filters": [
+                                {
+                                    "condition": "AND",
+                                    "filterType": "custom",
+                                    "key": "scope",
+                                    "operator": "=",
+                                    "type": "String",
+                                    "value": "create:shapes"
+                                },
+                                {
+                                    "condition": "AND",
+                                    "filterType": "custom",
+                                    "key": "obj_name",
+                                    "operator": "=",
+                                    "type": "Nullable(String)",
+                                    "value": "mask"
+                                }
+                            ],
+                            "limit": 100,
+                            "mode": "list",
+                            "orderBy": [],
+                            "table": "events"
+                        }
+                    },
+                    "queryType": "sql",
+                    "rawSql": "SELECT DATE_TRUNC('day', timestamp) as time, user_name, COUNT(*) as \"masks created by\"\r\nFROM cvat.events \r\nWHERE  \r\n    ( scope = 'create:shapes' ) \r\n    AND ( obj_name = 'mask' )\r\n  GROUP BY time, user_name\r\n  ORDER BY time",
+                    "refId": "A"
+                }
+            ],
+            "title": "Mask Creation",
+            "type": "timeseries"
+        },
+        {
             "collapsed": false,
             "gridPos": {
                 "h": 1,
                 "w": 24,
                 "x": 0,
-                "y": 0
+                "y": 9
             },
             "id": 23,
             "panels": [],
@@ -91,7 +272,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 1
+                "y": 10
             },
             "id": 8,
             "options": {
@@ -201,7 +382,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 12,
-                "y": 1
+                "y": 10
             },
             "id": 12,
             "options": {
@@ -310,7 +491,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 9
+                "y": 18
             },
             "id": 14,
             "options": {
@@ -411,7 +592,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 12,
-                "y": 9
+                "y": 18
             },
             "id": 10,
             "options": {
@@ -502,7 +683,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 17
+                "y": 26
             },
             "id": 21,
             "options": {
@@ -602,7 +783,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 12,
-                "y": 17
+                "y": 26
             },
             "id": 19,
             "options": {
@@ -656,7 +837,7 @@
                 "h": 1,
                 "w": 24,
                 "x": 0,
-                "y": 25
+                "y": 34
             },
             "id": 27,
             "panels": [],
@@ -715,7 +896,7 @@
                 "h": 10,
                 "w": 24,
                 "x": 0,
-                "y": 26
+                "y": 35
             },
             "id": 17,
             "options": {
@@ -816,7 +997,7 @@
                 "h": 10,
                 "w": 24,
                 "x": 0,
-                "y": 36
+                "y": 45
             },
             "id": 16,
             "options": {
@@ -916,7 +1097,7 @@
                 "h": 8,
                 "w": 24,
                 "x": 0,
-                "y": 46
+                "y": 55
             },
             "id": 31,
             "options": {
@@ -1014,7 +1195,7 @@
                 "h": 8,
                 "w": 24,
                 "x": 0,
-                "y": 54
+                "y": 63
             },
             "id": 29,
             "options": {
@@ -1067,7 +1248,7 @@
                 "h": 1,
                 "w": 24,
                 "x": 0,
-                "y": 62
+                "y": 71
             },
             "id": 25,
             "panels": [],
@@ -1135,7 +1316,7 @@
                 "h": 7,
                 "w": 24,
                 "x": 0,
-                "y": 63
+                "y": 72
             },
             "id": 4,
             "options": {
@@ -1270,7 +1451,7 @@
                 "h": 9,
                 "w": 24,
                 "x": 0,
-                "y": 70
+                "y": 79
             },
             "id": 6,
             "options": {
@@ -1380,7 +1561,7 @@
                 "h": 13,
                 "w": 24,
                 "x": 0,
-                "y": 79
+                "y": 88
             },
             "id": 2,
             "options": {
@@ -1541,13 +1722,13 @@
         ]
     },
     "time": {
-        "from": "now-7d",
+        "from": "now-30d",
         "to": "now"
     },
     "timepicker": {},
     "timezone": "",
     "title": "Management",
     "uid": "w0if6WAVz",
-    "version": 2,
+    "version": 1,
     "weekStart": ""
 }
