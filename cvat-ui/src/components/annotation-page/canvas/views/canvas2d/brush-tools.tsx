@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import Button from 'antd/lib/button';
 import Icon, { VerticalAlignBottomOutlined } from '@ant-design/icons';
 import InputNumber from 'antd/lib/input-number';
-import Select from 'antd/lib/select';
 
 import { filterApplicableForType } from 'utils/filter-applicable-labels';
 import { getCore, Label, LabelType } from 'cvat-core-wrapper';
@@ -229,13 +228,19 @@ function BrushTools(props: Props): React.ReactPortal | null {
                 type='text'
                 className={['cvat-brush-tools-brush', ...(currentTool === 'brush' ? ['cvat-brush-tools-active-tool'] : [])].join(' ')}
                 icon={<Icon component={BrushIcon} />}
-                onClick={() => setCurrentTool('brush')}
+                onClick={() => {
+                    setCurrentTool('brush');
+                    setBrushForm('circle');
+                }}
             />
             <Button
                 type='text'
                 className={['cvat-brush-tools-eraser', ...(currentTool === 'eraser' ? ['cvat-brush-tools-active-tool'] : [])].join(' ')}
                 icon={<Icon component={EraserIcon} />}
-                onClick={() => setCurrentTool('eraser')}
+                onClick={() => {
+                    setCurrentTool('eraser');
+                    setBrushForm('square');
+                }}
 
             />
             <Button
@@ -271,12 +276,6 @@ function BrushTools(props: Props): React.ReactPortal | null {
                         }}
                     />
                 </CVATTooltip>
-            ) : null}
-            { ['brush', 'eraser'].includes(currentTool) ? (
-                <Select value={brushForm} onChange={(value: 'circle' | 'square') => setBrushForm(value)}>
-                    <Select.Option value='circle'>Circle</Select.Option>
-                    <Select.Option value='square'>Square</Select.Option>
-                </Select>
             ) : null}
             <Button
                 type='text'
