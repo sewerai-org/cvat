@@ -74,8 +74,10 @@ function BrushTools(props: Props): React.ReactPortal | null {
             if (event) event.preventDefault();
             if (currentTool === 'eraser') {
                 setCurrentTool('brush');
+                setBrushForm('circle');
             } else {
                 setCurrentTool('eraser');
+                setBrushForm('square');
             }
         },
     };
