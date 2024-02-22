@@ -1,5 +1,5 @@
 // Copyright (C) 2020-2022 Intel Corporation
-// Copyright (C) 2022-2023 CVAT.ai Corporation
+// Copyright (C) 2022-2024 CVAT.ai Corporation
 //
 // SPDX-License-Identifier: MIT
 
@@ -23,8 +23,9 @@ import { CloudStorageActionTypes } from 'actions/cloud-storage-actions';
 import { OrganizationActionsTypes } from 'actions/organization-actions';
 import { JobsActionTypes } from 'actions/jobs-actions';
 import { WebhooksActionsTypes } from 'actions/webhooks-actions';
+import { InvitationsActionTypes } from 'actions/invitations-actions';
+import { ServerAPIActionTypes } from 'actions/server-actions';
 
-import { AnalyticsActionsTypes } from 'actions/analytics-actions';
 import { NotificationsState } from '.';
 
 const defaultState: NotificationsState = {
@@ -37,7 +38,9 @@ const defaultState: NotificationsState = {
             changePassword: null,
             requestPasswordReset: null,
             resetPassword: null,
-            loadAuthActions: null,
+        },
+        serverAPI: {
+            fetching: null,
         },
         projects: {
             fetching: null,
@@ -92,6 +95,8 @@ const defaultState: NotificationsState = {
             creating: null,
             merging: null,
             grouping: null,
+            joining: null,
+            slicing: null,
             splitting: null,
             removing: null,
             propagating: null,
@@ -107,6 +112,7 @@ const defaultState: NotificationsState = {
             deleteFrame: null,
             restoreFrame: null,
             savingLogs: null,
+            canvas: null,
         },
         boundaries: {
             resetError: null,
@@ -148,6 +154,7 @@ const defaultState: NotificationsState = {
             inviting: null,
             updatingMembership: null,
             removingMembership: null,
+            deletingInvitation: null,
         },
         webhooks: {
             fetching: null,
@@ -159,6 +166,12 @@ const defaultState: NotificationsState = {
             fetching: null,
             fetchingSettings: null,
             updatingSettings: null,
+        },
+        invitations: {
+            fetching: null,
+            acceptingInvitation: null,
+            decliningInvitation: null,
+            resendingInvitation: null,
         },
     },
     messages: {
@@ -188,6 +201,12 @@ const defaultState: NotificationsState = {
             dataset: '',
             annotation: '',
             backup: '',
+        },
+        invitations: {
+            newInvitations: '',
+            acceptInvitationDone: '',
+            declineInvitationDone: '',
+            resendingInvitation: '',
         },
     },
 };
@@ -364,18 +383,113 @@ export default function (state = defaultState, action: AnyAction): Notifications
                 },
             };
         }
-        case AuthActionTypes.LOAD_AUTH_ACTIONS_FAILED: {
+        case ServerAPIActionTypes.GET_SERVER_API_SCHEMA_FAILED: {
             return {
                 ...state,
                 errors: {
                     ...state.errors,
-                    auth: {
-                        ...state.errors.auth,
-                        loadAuthActions: {
-                            message: 'Could not check available auth actions',
+                    serverAPI: {
+                        ...state.errors.serverAPI,
+                        fetching: {
+                            message: 'Could not receive server schema',
                             reason: action.payload.error,
                             shouldLog: !(action.payload.error instanceof ServerError),
                         },
+                    },
+                },
+            };
+        }
+        case InvitationsActionTypes.GET_INVITATIONS_SUCCESS: {
+            if (action.payload.showNotification) {
+                return {
+                    ...state,
+                    messages: {
+                        ...state.messages,
+                        invitations: {
+                            ...state.messages.invitations,
+                            newInvitations: 'You\'ve received an invitation to join an organization! [Click here](/invitations) to get details.',
+                        },
+                    },
+                };
+            }
+            return state;
+        }
+        case InvitationsActionTypes.GET_INVITATIONS_FAILED: {
+            return {
+                ...state,
+                errors: {
+                    ...state.errors,
+                    invitations: {
+                        ...state.errors.invitations,
+                        fetching: {
+                            message: 'Could not get invitations',
+                            reason: action.payload.error,
+                            shouldLog: !(action.payload.error instanceof ServerError),
+                            className: 'cvat-notification-notice-get-invitations-failed',
+                        },
+                    },
+                },
+            };
+        }
+        case InvitationsActionTypes.ACCEPT_INVITATION_FAILED: {
+            return {
+                ...state,
+                errors: {
+                    ...state.errors,
+                    invitations: {
+                        ...state.errors.invitations,
+                        acceptingInvitation: {
+                            message: 'Could not accept invitation',
+                            reason: action.payload.error,
+                            shouldLog: !(action.payload.error instanceof ServerError),
+                            className: 'cvat-notification-notice-accept-organization-invitation-failed',
+                        },
+                    },
+                },
+            };
+        }
+        case InvitationsActionTypes.DECLINE_INVITATION_FAILED: {
+            return {
+                ...state,
+                errors: {
+                    ...state.errors,
+                    invitations: {
+                        ...state.errors.invitations,
+                        decliningInvitation: {
+                            message: 'Could not decline invitation',
+                            reason: action.payload.error,
+                            shouldLog: !(action.payload.error instanceof ServerError),
+                            className: 'cvat-notification-notice-decline-organization-invitation-failed',
+                        },
+                    },
+                },
+            };
+        }
+        case InvitationsActionTypes.RESEND_INVITATION_FAILED: {
+            return {
+                ...state,
+                errors: {
+                    ...state.errors,
+                    invitations: {
+                        ...state.errors.invitations,
+                        resendingInvitation: {
+                            message: 'Could not resend invitation',
+                            reason: action.payload.error,
+                            shouldLog: !(action.payload.error instanceof ServerError),
+                            className: 'cvat-notification-notice-resend-organization-invitation-failed',
+                        },
+                    },
+                },
+            };
+        }
+        case InvitationsActionTypes.RESEND_INVITATION_SUCCESS: {
+            return {
+                ...state,
+                messages: {
+                    ...state.messages,
+                    invitations: {
+                        ...state.messages.invitations,
+                        resendingInvitation: 'Invitation was sent successfully',
                     },
                 },
             };
@@ -766,39 +880,6 @@ export default function (state = defaultState, action: AnyAction): Notifications
                 },
             };
         }
-        case ModelsActionTypes.CREATE_MODEL_FAILED: {
-            return {
-                ...state,
-                errors: {
-                    ...state.errors,
-                    models: {
-                        ...state.errors.models,
-                        creating: {
-                            message: 'Could not create model',
-                            reason: action.payload.error,
-                            shouldLog: !(action.payload.error instanceof ServerError),
-                        },
-                    },
-                },
-            };
-        }
-        case ModelsActionTypes.DELETE_MODEL_FAILED: {
-            const { modelName } = action.payload;
-            return {
-                ...state,
-                errors: {
-                    ...state.errors,
-                    models: {
-                        ...state.errors.models,
-                        deleting: {
-                            message: `Could not delete model ${modelName}`,
-                            reason: action.payload.error,
-                            shouldLog: !(action.payload.error instanceof ServerError),
-                        },
-                    },
-                },
-            };
-        }
         case AnnotationActionTypes.GET_JOB_FAILED: {
             return {
                 ...state,
@@ -914,6 +995,37 @@ export default function (state = defaultState, action: AnyAction): Notifications
                 },
             };
         }
+        case AnnotationActionTypes.JOIN_ANNOTATIONS_FAILED: {
+            return {
+                ...state,
+                errors: {
+                    ...state.errors,
+                    annotation: {
+                        ...state.errors.annotation,
+                        joining: {
+                            message: 'Could not join annotations',
+                            reason: action.payload.error,
+                            shouldLog: !(action.payload.error instanceof ServerError),
+                        },
+                    },
+                },
+            };
+        }
+        case AnnotationActionTypes.SLICE_ANNOTATIONS_FAILED:
+            return {
+                ...state,
+                errors: {
+                    ...state.errors,
+                    annotation: {
+                        ...state.errors.annotation,
+                        slicing: {
+                            message: 'Could not slice the object',
+                            reason: action.payload.error,
+                            shouldLog: !(action.payload.error instanceof ServerError),
+                        },
+                    },
+                },
+            };
         case AnnotationActionTypes.SPLIT_ANNOTATIONS_FAILED: {
             return {
                 ...state,
@@ -1276,6 +1388,23 @@ export default function (state = defaultState, action: AnyAction): Notifications
                 },
             };
         }
+        case AnnotationActionTypes.CANVAS_ERROR_OCCURRED: {
+            return {
+                ...state,
+                errors: {
+                    ...state.errors,
+                    annotation: {
+                        ...state.errors.annotation,
+                        canvas: {
+                            message: 'Canvas error occurred',
+                            reason: action.payload.error,
+                            shouldLog: true,
+                            className: 'cvat-notification-notice-canvas-error-occurreed',
+                        },
+                    },
+                },
+            };
+        }
         case AnnotationActionTypes.DELETE_FRAME_FAILED: {
             return {
                 ...state,
@@ -1427,23 +1556,6 @@ export default function (state = defaultState, action: AnyAction): Notifications
                             reason: action.payload.error,
                             shouldLog: !(action.payload.error instanceof ServerError),
                             className: 'cvat-notification-notice-fetch-cloud-storage-preview-failed',
-                        },
-                    },
-                },
-            };
-        }
-        case OrganizationActionsTypes.GET_ORGANIZATIONS_FAILED: {
-            return {
-                ...state,
-                errors: {
-                    ...state.errors,
-                    organizations: {
-                        ...state.errors.organizations,
-                        fetching: {
-                            message: 'Could not fetch organizations list',
-                            reason: action.payload.error,
-                            shouldLog: !(action.payload.error instanceof ServerError),
-                            className: 'cvat-notification-notice-fetch-organizations-failed',
                         },
                     },
                 },
@@ -1735,57 +1847,6 @@ export default function (state = defaultState, action: AnyAction): Notifications
                             reason: action.payload.error,
                             shouldLog: !(action.payload.error instanceof ServerError),
                             className: 'cvat-notification-notice-delete-webhook-failed',
-                        },
-                    },
-                },
-            };
-        }
-        case AnalyticsActionsTypes.GET_QUALITY_REPORTS_FAILED: {
-            return {
-                ...state,
-                errors: {
-                    ...state.errors,
-                    analytics: {
-                        ...state.errors.analytics,
-                        fetching: {
-                            message: 'Could not fetch quality reports',
-                            reason: action.payload.error,
-                            shouldLog: !(action.payload.error instanceof ServerError),
-                            className: 'cvat-notification-notice-get-quality-reports-failed',
-                        },
-                    },
-                },
-            };
-        }
-        case AnalyticsActionsTypes.GET_QUALITY_SETTINGS_FAILED: {
-            return {
-                ...state,
-                errors: {
-                    ...state.errors,
-                    analytics: {
-                        ...state.errors.analytics,
-                        fetchingSettings: {
-                            message: 'Could not fetch quality settings',
-                            reason: action.payload.error,
-                            shouldLog: !(action.payload.error instanceof ServerError),
-                            className: 'cvat-notification-notice-get-quality-settings-failed',
-                        },
-                    },
-                },
-            };
-        }
-        case AnalyticsActionsTypes.UPDATE_QUALITY_SETTINGS_FAILED: {
-            return {
-                ...state,
-                errors: {
-                    ...state.errors,
-                    analytics: {
-                        ...state.errors.analytics,
-                        updatingSettings: {
-                            message: 'Could not update quality settings',
-                            reason: action.payload.error,
-                            shouldLog: !(action.payload.error instanceof ServerError),
-                            className: 'cvat-notification-notice-update-quality-settings-failed',
                         },
                     },
                 },

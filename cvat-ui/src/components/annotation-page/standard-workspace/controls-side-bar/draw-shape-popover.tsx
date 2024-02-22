@@ -1,5 +1,5 @@
 // Copyright (C) 2020-2022 Intel Corporation
-// Copyright (C) 2022-2023 CVAT.ai Corporation
+// Copyright (C) 2022-2024 CVAT.ai Corporation
 //
 // SPDX-License-Identifier: MIT
 
@@ -156,13 +156,11 @@ function DrawShapePopoverComponent(props: Props): JSX.Element {
                 </Row>
             ) : null}
             <Row justify='space-around'>
-                <Col span={12}>
+                <Col span={24}>
                     <CVATTooltip title={`Press ${repeatShapeShortcut} to draw again`}>
                         <Button className={`cvat-draw-${shapeType}-shape-button`} onClick={onDrawShape}>Shape</Button>
                     </CVATTooltip>
-                </Col>
-                {shapeType !== ShapeType.MASK && (
-                    <Col span={12}>
+                    {shapeType !== ShapeType.MASK && (
                         <CVATTooltip title={`Press ${repeatShapeShortcut} to draw again`}>
                             <Button
                                 className={`cvat-draw-${shapeType}-track-button`}
@@ -171,8 +169,8 @@ function DrawShapePopoverComponent(props: Props): JSX.Element {
                                 Track
                             </Button>
                         </CVATTooltip>
-                    </Col>
-                )}
+                    )}
+                </Col>
             </Row>
         </div>
     );

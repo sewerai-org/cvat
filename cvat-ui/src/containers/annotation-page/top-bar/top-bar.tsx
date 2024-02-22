@@ -1,5 +1,5 @@
 // Copyright (C) 2021-2022 Intel Corporation
-// Copyright (C) 2023 CVAT.ai Corporation
+// Copyright (C) 2023-2024 CVAT.ai Corporation
 //
 // SPDX-License-Identifier: MIT
 
@@ -31,7 +31,7 @@ import {
 import AnnotationTopBarComponent from 'components/annotation-page/top-bar/top-bar';
 import { Canvas } from 'cvat-canvas-wrapper';
 import { Canvas3d } from 'cvat-canvas3d-wrapper';
-import { DimensionType, JobType } from 'cvat-core-wrapper';
+import { DimensionType, Job, JobType } from 'cvat-core-wrapper';
 import {
     CombinedState,
     FrameSpeed,
@@ -42,9 +42,10 @@ import {
 import isAbleToChangeFrame from 'utils/is-able-to-change-frame';
 import GlobalHotKeys, { KeyMap } from 'utils/mousetrap-react';
 import { switchToolsBlockerState } from 'actions/settings-actions';
+import { writeLatestFrame } from 'utils/remember-latest-frame';
 
 interface StateToProps {
-    jobInstance: any;
+    jobInstance: Job;
     frameIsDeleted: boolean;
     frameNumber: number;
     frameFilename: string;
@@ -68,16 +69,18 @@ interface StateToProps {
     forceExit: boolean;
     ranges: string;
     activeControl: ActiveControl;
+    annotationFilters: object[];
+    initialOpenGuide: boolean;
 }
 
 interface DispatchToProps {
     onChangeFrame(frame: number, fillBuffer?: boolean, frameStep?: number): void;
     onSwitchPlay(playing: boolean): void;
-    onSaveAnnotation(sessionInstance: any): void;
+    onSaveAnnotation(): void;
     showStatistics(sessionInstance: any): void;
     showFilters(sessionInstance: any): void;
-    undo(sessionInstance: any, frameNumber: any): void;
-    redo(sessionInstance: any, frameNumber: any): void;
+    undo(): void;
+    redo(): void;
     searchAnnotations(sessionInstance: any, frameFrom: number, frameTo: number): void;
     searchEmptyFrame(sessionInstance: any, frameFrom: number, frameTo: number): void;
     setForceExitAnnotationFlag(forceExit: boolean): void;
@@ -105,8 +108,9 @@ function mapStateToProps(state: CombinedState): StateToProps {
             annotations: {
                 saving: { uploading: saving, forceExit },
                 history,
+                filters: annotationFilters,
             },
-            job: { instance: jobInstance },
+            job: { instance: jobInstance, initialOpenGuide },
             canvas: { ready: canvasIsReady, instance: canvasInstance, activeControl },
             workspace,
         },
@@ -132,7 +136,7 @@ function mapStateToProps(state: CombinedState): StateToProps {
         saving,
         frameNumber,
         frameFilename,
-        jobInstance,
+        jobInstance: jobInstance as Job,
         undoAction: history.undo.length ? history.undo[history.undo.length - 1][0] : undefined,
         redoAction: history.redo.length ? history.redo[history.redo.length - 1][0] : undefined,
         autoSave,
@@ -142,10 +146,12 @@ function mapStateToProps(state: CombinedState): StateToProps {
         workspace,
         keyMap,
         normalizedKeyMap,
-        canvasInstance,
+        canvasInstance: canvasInstance as NonNullable<typeof canvasInstance>,
         forceExit,
         activeControl,
         ranges,
+        annotationFilters,
+        initialOpenGuide,
     };
 }
 
@@ -157,8 +163,8 @@ function mapDispatchToProps(dispatch: any): DispatchToProps {
         onSwitchPlay(playing: boolean): void {
             dispatch(switchPlay(playing));
         },
-        onSaveAnnotation(sessionInstance: any): void {
-            dispatch(saveAnnotationsAsync(sessionInstance));
+        onSaveAnnotation(): void {
+            dispatch(saveAnnotationsAsync());
         },
         showStatistics(sessionInstance: any): void {
             dispatch(collectStatisticsAsync(sessionInstance));
@@ -167,11 +173,11 @@ function mapDispatchToProps(dispatch: any): DispatchToProps {
         showFilters(): void {
             dispatch(showFiltersAction(true));
         },
-        undo(sessionInstance: any, frameNumber: any): void {
-            dispatch(undoActionAsync(sessionInstance, frameNumber));
+        undo(): void {
+            dispatch(undoActionAsync());
         },
-        redo(sessionInstance: any, frameNumber: any): void {
-            dispatch(redoActionAsync(sessionInstance, frameNumber));
+        redo(): void {
+            dispatch(redoActionAsync());
         },
         searchAnnotations(sessionInstance: any, frameFrom: number, frameTo: number): void {
             dispatch(searchAnnotationsAsync(sessionInstance, frameFrom, frameTo)).then((frame: number | null) => {
@@ -247,8 +253,9 @@ class AnnotationTopBarContainer extends React.PureComponent<Props, State> {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const self = this;
         this.unblock = history.block((location: any) => {
-            const { forceExit } = self.props;
+            const { forceExit, frameNumber } = self.props;
             const { id: jobID, taskId: taskID } = jobInstance;
+            writeLatestFrame(jobInstance.id, frameNumber);
 
             if (
                 jobInstance.annotations.hasUnsavedChanges() &&
@@ -285,18 +292,18 @@ class AnnotationTopBarContainer extends React.PureComponent<Props, State> {
     }
 
     private undo = (): void => {
-        const { undo, jobInstance, frameNumber } = this.props;
+        const { undo } = this.props;
 
         if (isAbleToChangeFrame()) {
-            undo(jobInstance, frameNumber);
+            undo();
         }
     };
 
     private redo = (): void => {
-        const { redo, jobInstance, frameNumber } = this.props;
+        const { redo } = this.props;
 
         if (isAbleToChangeFrame()) {
-            redo(jobInstance, frameNumber);
+            redo();
         }
     };
 
@@ -496,8 +503,8 @@ class AnnotationTopBarContainer extends React.PureComponent<Props, State> {
     };
 
     private onSaveAnnotation = (): void => {
-        const { onSaveAnnotation, jobInstance } = this.props;
-        onSaveAnnotation(jobInstance);
+        const { onSaveAnnotation } = this.props;
+        onSaveAnnotation();
     };
 
     private onChangePlayerSliderValue = async (value: number): Promise<void> => {
@@ -605,6 +612,9 @@ class AnnotationTopBarContainer extends React.PureComponent<Props, State> {
 
     private beforeUnloadCallback = (event: BeforeUnloadEvent): string | undefined => {
         const { jobInstance, forceExit, setForceExitAnnotationFlag } = this.props;
+        const { frameNumber } = this.props;
+
+        writeLatestFrame(jobInstance.id, frameNumber);
         if (jobInstance.annotations.hasUnsavedChanges() && !forceExit) {
             const confirmationMessage = 'You have unsaved changes, please confirm leaving this page.';
             // eslint-disable-next-line no-param-reassign
@@ -719,9 +729,11 @@ class AnnotationTopBarContainer extends React.PureComponent<Props, State> {
             ranges,
             normalizedKeyMap,
             activeControl,
+            annotationFilters,
+            initialOpenGuide,
+            toolsBlockerState,
             searchAnnotations,
             switchNavigationBlocked,
-            toolsBlockerState,
         } = this.props;
 
         const preventDefault = (event: KeyboardEvent | undefined): void => {
@@ -860,6 +872,8 @@ class AnnotationTopBarContainer extends React.PureComponent<Props, State> {
                     nextButtonType={nextButtonType}
                     prevButtonType={prevButtonType}
                     focusFrameInputShortcut={normalizedKeyMap.FOCUS_INPUT_FRAME}
+                    annotationFilters={annotationFilters}
+                    initialOpenGuide={initialOpenGuide}
                     onUndoClick={this.undo}
                     onRedoClick={this.redo}
                     onFinishDraw={this.onFinishDraw}

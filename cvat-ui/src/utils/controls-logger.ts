@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import { getCore } from 'cvat-core-wrapper';
-import { LogType } from 'cvat-logger';
+import { EventScope } from 'cvat-logger';
 import config from 'config';
 import { platformInfo } from 'utils/platform-checker';
 
@@ -14,10 +14,10 @@ const classFilter = ['ant-btn'];
 const parentClassFilter = ['ant-btn'];
 
 class EventRecorder {
-    #savingInterval: number | null;
+    #savingTimeout: number | null;
     public constructor() {
-        this.#savingInterval = null;
-        core.logger.log(LogType.loadTool, {
+        this.#savingTimeout = null;
+        core.logger.log(EventScope.loadTool, {
             location: window.location.pathname + window.location.search,
             platform: platformInfo(),
         });
@@ -45,15 +45,18 @@ class EventRecorder {
         }
 
         if (toRecord) {
-            core.logger.log(LogType.clickElement, logData, false);
+            core.logger.log(EventScope.clickElement, logData, false);
         }
     }
 
     public initSave(): void {
-        if (this.#savingInterval) return;
-        this.#savingInterval = setInterval(() => {
-            core.logger.save();
-        }, CONTROLS_LOGS_INTERVAL) as unknown as number;
+        if (this.#savingTimeout) return;
+        this.#savingTimeout = window.setTimeout(() => {
+            core.logger.save().finally(() => {
+                this.#savingTimeout = null;
+                this.initSave();
+            });
+        }, CONTROLS_LOGS_INTERVAL);
     }
 
     private filterClassName(cls: string): string {

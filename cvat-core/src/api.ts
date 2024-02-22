@@ -1,11 +1,11 @@
 // Copyright (C) 2019-2022 Intel Corporation
-// Copyright (C) 2022-2023 CVAT.ai Corporation
+// Copyright (C) 2022-2024 CVAT.ai Corporation
 //
 // SPDX-License-Identifier: MIT
 
 import PluginRegistry from './plugins';
-import loggerStorage from './logger-storage';
-import { EventLogger } from './log';
+import logger from './logger';
+import { Event } from './event';
 import ObjectState from './object-state';
 import Statistics from './statistics';
 import Comment from './comment';
@@ -21,6 +21,7 @@ import CloudStorage from './cloud-storage';
 import Organization from './organization';
 import Webhook from './webhook';
 import AnnotationGuide from './guide';
+import BaseSingleFrameAction from './annotations-actions';
 
 import * as enums from './enums';
 
@@ -28,21 +29,23 @@ import {
     Exception, ArgumentError, DataError, ScriptingError, ServerError,
 } from './exceptions';
 
+import { mask2Rle, rle2Mask } from './object-utils';
 import User from './user';
 import pjson from '../package.json';
 import config from './config';
 
 import implementAPI from './api-implementation';
+import CVATCore from '.';
 
-function build() {
-    const cvat = {
+function build(): CVATCore {
+    const cvat: CVATCore = {
         server: {
             async about() {
                 const result = await PluginRegistry.apiWrapper(cvat.server.about);
                 return result;
             },
-            async share(directory = '/') {
-                const result = await PluginRegistry.apiWrapper(cvat.server.share, directory);
+            async share(directory = '/', searchPrefix?: string) {
+                const result = await PluginRegistry.apiWrapper(cvat.server.share, directory, searchPrefix);
                 return result;
             },
             async formats() {
@@ -110,8 +113,8 @@ function build() {
                 );
                 return result;
             },
-            async request(url, data) {
-                const result = await PluginRegistry.apiWrapper(cvat.server.request, url, data);
+            async request(url, data, requestConfig) {
+                const result = await PluginRegistry.apiWrapper(cvat.server.request, url, data, requestConfig);
                 return result;
             },
             async setAuthData(response) {
@@ -124,6 +127,10 @@ function build() {
             },
             async installedApps() {
                 const result = await PluginRegistry.apiWrapper(cvat.server.installedApps);
+                return result;
+            },
+            async apiSchema() {
+                const result = await PluginRegistry.apiWrapper(cvat.server.apiSchema);
                 return result;
             },
         },
@@ -177,6 +184,42 @@ function build() {
                 return result;
             },
         },
+        actions: {
+            async list() {
+                const result = await PluginRegistry.apiWrapper(cvat.actions.list);
+                return result;
+            },
+            async register(action: BaseSingleFrameAction) {
+                const result = await PluginRegistry.apiWrapper(cvat.actions.register, action);
+                return result;
+            },
+            async run(
+                instance: Job | Task,
+                actionsChain: BaseSingleFrameAction[],
+                actionsParameters: Record<string, string>[],
+                frameFrom: number,
+                frameTo: number,
+                filters: string[],
+                onProgress: (
+                    message: string,
+                    progress: number,
+                ) => void,
+                cancelled: () => boolean,
+            ) {
+                const result = await PluginRegistry.apiWrapper(
+                    cvat.actions.run,
+                    instance,
+                    actionsChain,
+                    actionsParameters,
+                    frameFrom,
+                    frameTo,
+                    filters,
+                    onProgress,
+                    cancelled,
+                );
+                return result;
+            },
+        },
         lambda: {
             async list() {
                 const result = await PluginRegistry.apiWrapper(cvat.lambda.list);
@@ -202,12 +245,8 @@ function build() {
                 const result = await PluginRegistry.apiWrapper(cvat.lambda.requests);
                 return result;
             },
-            async providers() {
-                const result = await PluginRegistry.apiWrapper(cvat.lambda.providers);
-                return result;
-            },
         },
-        logger: loggerStorage,
+        logger,
         config: {
             get backendAPI() {
                 return config.backendAPI;
@@ -227,17 +266,25 @@ function build() {
             set uploadChunkSize(value) {
                 config.uploadChunkSize = value;
             },
-            get removeUnderlyingMaskPixels(): boolean {
-                return config.removeUnderlyingMaskPixels;
-            },
-            set removeUnderlyingMaskPixels(value: boolean) {
-                config.removeUnderlyingMaskPixels = value;
+            removeUnderlyingMaskPixels: {
+                get enabled() {
+                    return config.removeUnderlyingMaskPixels.enabled;
+                },
+                set enabled(value: boolean) {
+                    config.removeUnderlyingMaskPixels.enabled = value;
+                },
+                set onEmptyMaskOccurrence(value: () => void) {
+                    config.removeUnderlyingMaskPixels.onEmptyMaskOccurrence = value;
+                },
             },
             get onOrganizationChange(): (orgId: number) => void {
                 return config.onOrganizationChange;
             },
             set onOrganizationChange(value: (orgId: number) => void) {
                 config.onOrganizationChange = value;
+            },
+            set globalObjectsCounter(value: number) {
+                config.globalObjectsCounter = value;
             },
         },
         client: {
@@ -258,8 +305,8 @@ function build() {
             },
         },
         organizations: {
-            async get() {
-                const result = await PluginRegistry.apiWrapper(cvat.organizations.get);
+            async get(filter = {}) {
+                const result = await PluginRegistry.apiWrapper(cvat.organizations.get, filter);
                 return result;
             },
             async activate(organization) {
@@ -268,6 +315,24 @@ function build() {
             },
             async deactivate() {
                 const result = await PluginRegistry.apiWrapper(cvat.organizations.deactivate);
+                return result;
+            },
+            async acceptInvitation(key) {
+                const result = await PluginRegistry.apiWrapper(
+                    cvat.organizations.acceptInvitation,
+                    key,
+                );
+                return result;
+            },
+            async declineInvitation(key) {
+                const result = await PluginRegistry.apiWrapper(
+                    cvat.organizations.declineInvitation,
+                    key,
+                );
+                return result;
+            },
+            async invitations(filter = {}) {
+                const result = await PluginRegistry.apiWrapper(cvat.organizations.invitations, filter);
                 return result;
             },
         },
@@ -285,17 +350,17 @@ function build() {
                 },
             },
             quality: {
-                async reports(filter: any) {
+                async reports(filter = {}) {
                     const result = await PluginRegistry.apiWrapper(cvat.analytics.quality.reports, filter);
                     return result;
                 },
-                async conflicts(filter: any) {
+                async conflicts(filter = {}) {
                     const result = await PluginRegistry.apiWrapper(cvat.analytics.quality.conflicts, filter);
                     return result;
                 },
                 settings: {
-                    async get(taskID: number) {
-                        const result = await PluginRegistry.apiWrapper(cvat.analytics.quality.settings.get, taskID);
+                    async get(filter = {}) {
+                        const result = await PluginRegistry.apiWrapper(cvat.analytics.quality.settings.get, filter);
                         return result;
                     },
                 },
@@ -306,7 +371,7 @@ function build() {
             Project: implementProject(Project),
             Task: implementTask(Task),
             Job: implementJob(Job),
-            EventLogger,
+            Event,
             Attribute,
             Label,
             Statistics,
@@ -319,6 +384,11 @@ function build() {
             Organization,
             Webhook,
             AnnotationGuide,
+            BaseSingleFrameAction,
+        },
+        utils: {
+            mask2Rle,
+            rle2Mask,
         },
     };
 
@@ -340,8 +410,8 @@ function build() {
     cvat.organizations = Object.freeze(cvat.organizations);
     cvat.webhooks = Object.freeze(cvat.webhooks);
     cvat.analytics = Object.freeze(cvat.analytics);
-    cvat.storage = Object.freeze(cvat.storage);
     cvat.classes = Object.freeze(cvat.classes);
+    cvat.utils = Object.freeze(cvat.utils);
 
     const implemented = Object.freeze(implementAPI(cvat));
     return implemented;

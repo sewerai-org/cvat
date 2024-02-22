@@ -1,15 +1,17 @@
-// Copyright (C) 2022 CVAT.ai Corporation
+// Copyright (C) 2022-2024 CVAT.ai Corporation
 //
 // SPDX-License-Identifier: MIT
 
 import './brush-toolbox-styles.scss';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Button from 'antd/lib/button';
 import Icon, { VerticalAlignBottomOutlined } from '@ant-design/icons';
 import InputNumber from 'antd/lib/input-number';
+import Select from 'antd/lib/select';
+import notification from 'antd/lib/notification';
 
 import { filterApplicableForType } from 'utils/filter-applicable-labels';
 import { getCore, Label, LabelType } from 'cvat-core-wrapper';
@@ -54,6 +56,11 @@ function BrushTools(props: Props): React.ReactPortal | null {
     const [brushSize, setBrushSize] = useState(10);
     const [applicableLabels, setApplicableLabels] = useState<Label[]>([]);
 
+    const [blockedTools, setBlockedTools] = useState<Record<'eraser' | 'polygon-minus', boolean>>({
+        eraser: false,
+        'polygon-minus': false,
+    });
+
     const [removeUnderlyingPixels, setRemoveUnderlyingPixels] = useState(false);
     const dragBar = useDraggable(
         (): number[] => {
@@ -82,9 +89,22 @@ function BrushTools(props: Props): React.ReactPortal | null {
         },
     };
 
+    const onBlockUpdated = useCallback((blockedToolsConfiguration: typeof blockedTools) => {
+        setBlockedTools(blockedToolsConfiguration);
+    }, []);
+
+    getCore().config.removeUnderlyingMaskPixels.onEmptyMaskOccurrence = () => {
+        notification.warning({
+            message: 'Some objects were deleted',
+            description: 'As a result of removing the underlying pixels, some masks became empty and were subsequently deleted.',
+            className: 'cvat-empty-masks-notification',
+            duration: null,
+        });
+    };
+
     useEffect(() => {
         const label = labels.find((_label: any) => _label.id === defaultLabelID);
-        getCore().config.removeUnderlyingMaskPixels = removeUnderlyingPixels;
+        getCore().config.removeUnderlyingMaskPixels.enabled = removeUnderlyingPixels;
         if (visible && label && canvasInstance instanceof Canvas) {
             const onUpdateConfiguration = ({ brushTool }: any): void => {
                 if (brushTool?.size) {
@@ -102,6 +122,7 @@ function BrushTools(props: Props): React.ReactPortal | null {
                         size: brushSize,
                         form: brushForm,
                         color: label.color,
+                        onBlockUpdated,
                     },
                     onUpdateConfiguration,
                 });
@@ -114,6 +135,7 @@ function BrushTools(props: Props): React.ReactPortal | null {
                         size: brushSize,
                         form: brushForm,
                         color: label.color,
+                        onBlockUpdated,
                     },
                     onUpdateConfiguration,
                 });
@@ -134,6 +156,12 @@ function BrushTools(props: Props): React.ReactPortal | null {
     }, []);
 
     useEffect(() => {
+        const resetCurrentTool = (): void => {
+            if (['eraser', 'polygon-minus'].includes(currentTool)) {
+                setCurrentTool('brush');
+            }
+        };
+
         const hideToolset = (): void => {
             if (visible) {
                 dispatch(updateCanvasBrushTools({ visible: false }));
@@ -161,6 +189,7 @@ function BrushTools(props: Props): React.ReactPortal | null {
             canvasInstance.html().addEventListener('canvas.drawn', hideToolset);
             canvasInstance.html().addEventListener('canvas.canceled', hideToolset);
             canvasInstance.html().addEventListener('canvas.canceled', updateEditableState);
+            canvasInstance.html().addEventListener('canvas.drawstart', resetCurrentTool);
             canvasInstance.html().addEventListener('canvas.drawstart', showToolset);
             canvasInstance.html().addEventListener('canvas.editstart', showToolset);
             canvasInstance.html().addEventListener('canvas.editstart', updateEditableState);
@@ -172,13 +201,14 @@ function BrushTools(props: Props): React.ReactPortal | null {
                 canvasInstance.html().removeEventListener('canvas.drawn', hideToolset);
                 canvasInstance.html().removeEventListener('canvas.canceled', hideToolset);
                 canvasInstance.html().removeEventListener('canvas.canceled', updateEditableState);
+                canvasInstance.html().removeEventListener('canvas.drawstart', resetCurrentTool);
                 canvasInstance.html().removeEventListener('canvas.drawstart', showToolset);
                 canvasInstance.html().removeEventListener('canvas.editstart', showToolset);
                 canvasInstance.html().removeEventListener('canvas.editstart', updateEditableState);
                 canvasInstance.html().removeEventListener('canvas.editdone', updateEditableState);
             }
         };
-    }, [visible, editableState]);
+    }, [visible, editableState, currentTool]);
 
     if (!labels.length) {
         return null;
@@ -243,6 +273,7 @@ function BrushTools(props: Props): React.ReactPortal | null {
                     setCurrentTool('eraser');
                     setBrushForm('square');
                 }}
+                disabled={blockedTools.eraser}
 
             />
             <Button
@@ -256,6 +287,7 @@ function BrushTools(props: Props): React.ReactPortal | null {
                 className={['cvat-brush-tools-polygon-minus', ...(currentTool === 'polygon-minus' ? ['cvat-brush-tools-active-tool'] : [])].join(' ')}
                 icon={<Icon component={PolygonMinusIcon} />}
                 onClick={() => setCurrentTool('polygon-minus')}
+                disabled={blockedTools['polygon-minus']}
             />
             { ['brush', 'eraser'].includes(currentTool) ? (
                 <CVATTooltip title='Brush size [Hold Alt + Right Mouse Click + Drag Left/Right]'>

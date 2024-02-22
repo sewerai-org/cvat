@@ -15,24 +15,25 @@ you'll learn how to take control of your subscriptions and manage them.
 See:
 
 - [Billing](#billing)
-  - [Pro plan](#pro-plan)
+  - [Solo plan](#solo-plan)
   - [Team plan](#team-plan)
 - [Payment methods](#payment-methods)
   - [Paying with bank transfer](#paying-with-bank-transfer)
-  - [Change payment method on Pro plan](#change-payment-method-on-pro-plan)
+  - [Change payment method on Solo plan](#change-payment-method-on-solo-plan)
   - [Change payment method on Team plan](#change-payment-method-on-team-plan)
 - [Adding and removing team members](#adding-and-removing-team-members)
-  - [Pro plan](#pro-plan-1)
+  - [Solo plan](#solo-plan-1)
   - [Team plan](#team-plan-1)
 - [Change plan](#change-plan)
 - [Can I subscribe to several plans?](#can-i-subscribe-to-several-plans)
 - [Cancel plan](#cancel-plan)
   - [What will happen to my data?](#what-will-happen-to-my-data)
-  - [Pro plan](#pro-plan-2)
+  - [Solo plan](#solo-plan-2)
   - [Team plan](#team-plan-2)
 - [Plan renewal](#plan-renewal)
-  - [Pro plan](#pro-plan-3)
+  - [Solo plan](#solo-plan-3)
   - [Team plan](#team-plan-3)
+- [Subscription management video tutorial](#subscription-management-video-tutorial)
 
 ## Billing
 
@@ -42,9 +43,9 @@ description of limitations for each plan.
 For more information,
 see: [Pricing Plans](https://www.cvat.ai/post/new-pricing-plans)
 
-### Pro plan
+### Solo plan
 
-**Account/Month**: The **Pro** plan has a fixed price and is
+**Account/Month**: The **Solo** plan has a fixed price and is
 designed **for personal use only**. It doesn't allow collaboration with team members,
 but removes all the other limits of the **Free** plan.
 
@@ -63,6 +64,9 @@ All limits of the **Free** plan will be removed.
 > So, if you have three annotators working, you'll need to pay
 > for 4 seats (3 annotators + 1 organization owner).
 
+To add **VAT** or **Organization** details to the invoice, after subscribing to the Team plan,
+go to **Manage Team Plan** > **Manage** > **Billing information**.
+
 ## Payment methods
 
 This section describes how to change or add payment methods.
@@ -74,7 +78,7 @@ This section describes how to change or add payment methods.
 
 To pay with bank transfer:
 
-1. Go to the **Upgrade to Pro**/**Team plan**> **Get started**.
+1. Go to the **Upgrade to Solo**/**Team plan**> **Get started**.
 2. Click **US Bank Transfer**.
 3. Upon successful completion of the payment, the you will receive a receipt via email.
 
@@ -82,11 +86,11 @@ To pay with bank transfer:
 
 ![Bank Transfer Payment](/images/bank_transfer_payment.jpg)
 
-### Change payment method on Pro plan
+### Change payment method on Solo plan
 
-Access Manage **Pro Plan** > **Manage** and click **+Add Payment Method**
+Access Manage **Solo plan** > **Manage** and click **+Add Payment Method**
 
-![Payment pro](/images/update_payment_pro.png)
+![Payment pro](/images/update_payment_solo.png)
 
 ### Change payment method on Team plan
 
@@ -99,7 +103,7 @@ Access **Manage Team Plan** > **Manage** and click **+Add Payment Method**.
 This section describes how to add team members
 to collaborate within one team.
 
-### Pro plan
+### Solo plan
 
 Not available.
 
@@ -120,7 +124,7 @@ but next month you will pay less by the amount of unused funds.
 
 ## Change plan
 
-The procedure is the same for both **Pro** and **Team** plans.
+The procedure is the same for both **Solo** and **Team** plans.
 
 If for some reason you want to change your plan, you need to:
 
@@ -132,7 +136,7 @@ If for some reason you want to change your plan, you need to:
 
 Paid plans are not mutually exclusive.
 You can have several active subscriptions,
-for example, the **Pro** plan and several **Team**
+for example, the **Solo** plan and several **Team**
 plans for different organizations.
 
 ## Cancel plan
@@ -155,17 +159,23 @@ Following the one month, you will receive a
 notification requesting you to either remove the
 excess data or it will be deleted automatically.
 
-### Pro plan
+### Solo plan
 
-Access **Manage Pro Plan** > **Manage** > **Cancel plan**
+To cancel **Solo** plan, do the following:
+
+1. In the top right corner click on your nickname, then **Organization** > **Personal workspace**.
+2. Click again on the nickname, then follow to **Manage Solo plan** > **Manage** > **Cancel plan**
 
 Please, fill out the feedback form, to help us improve our platform.
 
-![Cancel pro](/images/cancel_pro.gif)
+![Cancel pro](/images/cancel_solo.gif)
 
 ### Team plan
 
-Access **Manage Team plan** > **Manage** -> **Cancel plan**
+To cancel **Team** plan, do the following:
+
+1. In the top right corner click on your nickname, then **Organization** > Organization name.
+2. Click again on the nickname, then follow to **Manage Team plan** > **Manage** > **Cancel plan**
 
 Please, fill out the feedback form, to help us improve our platform.
 
@@ -176,10 +186,18 @@ Please, fill out the feedback form, to help us improve our platform.
 This section describes how to renew your
 CVAT subscription
 
-### Pro plan
+### Solo plan
 
-Access **Manage Pro Plan** > **Manage** > **Renew plan**
+Access **Manage Solo plan** > **Manage** > **Renew plan**
 
 ### Team plan
 
 Access **Manage Team Plan** > **Manage** > **Renew plan**
+
+## Subscription management video tutorial
+
+<!--lint disable maximum-line-length-->
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/AMPtbmqZKNY?si=2TLhdytDIlSJ3Fwd" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+<!--lint enable maximum-line-length-->

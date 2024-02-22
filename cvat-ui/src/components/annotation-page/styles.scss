@@ -1,5 +1,5 @@
 // Copyright (C) 2020-2022 Intel Corporation
-// Copyright (C) 2023 CVAT.ai Corporation
+// Copyright (C) 2023-2024 CVAT.ai Corporation
 //
 // SPDX-License-Identifier: MIT
 
@@ -214,7 +214,7 @@
 
 .cvat-job-info-modal-window {
     > div {
-        margin-top: 10px;
+        margin-top: $grid-unit-size;
     }
 
     > div:nth-child(1) {
@@ -244,6 +244,10 @@
             }
 
             .ant-table-thead {
+                .cvat-info-circle-icon {
+                    margin-left: $grid-unit-size;
+                }
+
                 > tr > th {
                     padding: $grid-unit-size 0 $grid-unit-size $grid-unit-size * 0.5;
                 }
@@ -456,7 +460,7 @@
     .ant-modal-body {
         padding: 1px;
 
-        .recently-used-wrapper {
+        .cvat-recently-used-filters-wrapper {
             padding-top: $grid-unit-size * 2;
         }
 
