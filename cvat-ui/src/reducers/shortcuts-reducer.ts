@@ -407,7 +407,6 @@ const defaultKeyMap = ({
         description: 'Toggle between the paintbrush and the eraser on the mask brush tools',
         sequences: ['shift+e'],
         action: 'keydown',
-        applicable: [DimensionType.DIMENSION_3D],
     },
 } as any) as KeyMap;
 

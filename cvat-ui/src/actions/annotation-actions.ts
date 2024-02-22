@@ -665,8 +665,6 @@ export function changeFrameAsync(
             },
         } = state.annotation;
 
-        const { filters, frame, showAllInterpolationTracks } = receiveAnnotationsParameters();
-
         const startFrame = await job.startFrame;
         const stopFrame = await job.stopFrame;
 
