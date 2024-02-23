@@ -1003,8 +1003,7 @@ export function getJobAsync({
 export function saveAnnotationsAsync(afterSave?: () => void): ThunkAction {
     return async (dispatch: ActionCreator<Dispatch>): Promise<void> => {
         const { jobInstance } = receiveAnnotationsParameters();
-        const { filters, showAllInterpolationTracks } = receiveAnnotationsParameters();
-        const hasUnsavedChanges = sessionInstance.annotations.hasUnsavedChanges();
+        const hasUnsavedChanges = jobInstance.annotations.hasUnsavedChanges();
 
         dispatch({
             type: AnnotationActionTypes.SAVE_ANNOTATIONS,
@@ -1033,33 +1032,21 @@ export function saveAnnotationsAsync(afterSave?: () => void): ThunkAction {
                 afterSave();
             }
 
-            dispatch(fetchAnnotationsAsync());
-            if (sessionInstance instanceof cvat.classes.Job && sessionInstance.state === cvat.enums.JobState.NEW) {
-                sessionInstance.state = cvat.enums.JobState.IN_PROGRESS;
-                dispatch(updateJobAsync(sessionInstance));
-            }
-
-            dispatch({
-                type: AnnotationActionTypes.SAVE_ANNOTATIONS_SUCCESS,
-                payload: {
-                    states,
-                },
-            });
-
             if (hasUnsavedChanges) {
-                const annotationData = states.map((annotation: any) => ({
+                const annotationData = jobInstance.annotations.map((annotation: any) => ({
                     annotationId: annotation.label.id,
                     shape: annotation.shapeType,
                     points: annotation.points,
                 }));
                 mixpanel.track('Saved annotations for session',
                     {
-                        jobId: sessionInstance.id,
+                        jobId: jobInstance.id,
                         frame,
                         annotations: annotationData,
-
                     });
             }
+
+            dispatch(fetchAnnotationsAsync());
         } catch (error) {
             dispatch({
                 type: AnnotationActionTypes.SAVE_ANNOTATIONS_FAILED,
