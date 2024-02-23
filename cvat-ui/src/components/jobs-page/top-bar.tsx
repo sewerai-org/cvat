@@ -30,7 +30,6 @@ async function openAllJobsInNewTabs(jobs: Job[]): Promise<void> {
         window.open(`/tasks/${job.taskId}/jobs/${job.id}`, '_blank');
         await new Promise((resolve) => setTimeout(() => resolve(), 750));
     }
-    return;
 }
 function TopBarComponent(props: Props): JSX.Element {
     const {
