@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import Button from 'antd/lib/button';
 import Icon, { VerticalAlignBottomOutlined } from '@ant-design/icons';
 import InputNumber from 'antd/lib/input-number';
-import Select from 'antd/lib/select';
 import notification from 'antd/lib/notification';
 
 import { filterApplicableForType } from 'utils/filter-applicable-labels';

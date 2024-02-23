@@ -6,8 +6,6 @@
 import { ActionUnion, createAction, ThunkAction } from 'utils/redux';
 import { RegisterData } from 'components/register-page/register-form';
 import { getCore, User } from 'cvat-core-wrapper';
-import { UserConfirmation } from 'components/register-page/register-form';
-import isReachable from 'utils/url-checker';
 import mixpanel from 'mixpanel-browser';
 
 const cvat = getCore();
