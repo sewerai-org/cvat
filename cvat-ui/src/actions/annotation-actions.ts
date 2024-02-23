@@ -1002,7 +1002,7 @@ export function getJobAsync({
 
 export function saveAnnotationsAsync(afterSave?: () => void): ThunkAction {
     return async (dispatch: ActionCreator<Dispatch>): Promise<void> => {
-        const { jobInstance, frame, filters } = receiveAnnotationsParameters();
+        const { jobInstance, frame } = receiveAnnotationsParameters();
         const hasUnsavedChanges = await jobInstance.annotations.hasUnsavedChanges();
 
         dispatch({
@@ -1034,7 +1034,7 @@ export function saveAnnotationsAsync(afterSave?: () => void): ThunkAction {
 
             const annotations = await jobInstance.annotations.get(frame);
             if (hasUnsavedChanges) {
-                const annotationData = await annotations.map((annotation: any) => ({
+                const annotationData = annotations.map((annotation: any) => ({
                     annotationId: annotation.label.id,
                     shape: annotation.shapeType,
                     points: annotation.points,
