@@ -25,7 +25,7 @@ interface Props {
     onApplySearch(search: string | null): void;
 }
 
-async function openAllJobsInNewTabs(jobs: Job[]): Promise<void> {
+async function openAllJobsInNewTabs(jobs: Job[]){
     for (const job of jobs) {
         window.open(`/tasks/${job.taskId}/jobs/${job.id}`, '_blank');
         await new Promise((resolve) => setTimeout(resolve, 750));
