@@ -318,10 +318,10 @@ nuclio:
 
 analytics:
   enabled: true
-  clickhouseDb: cvat
-  clickhouseUser: user
-  clickhousePassword: user
-  clickhouseHost: "{{ .Release.Name }}-clickhouse"
+  clickhouseDb: ${CLICKHOUSE_DB}
+  clickhouseUser: ${CLICKHOUSE_USER}
+  clickhousePassword: ${CLICKHOUSE_PASSWORD}
+  clickhouseHost: ${CLICKHOUSE_HOST}
 
 vector:
   envFrom:
@@ -348,9 +348,9 @@ clickhouse:
   extraEnvVarsSecret: cvat-analytics-secret
   initdbScriptsSecret: cvat-clickhouse-init
   auth:
-    username: user
+    username: ${CLICKHOUSE_USER}
     existingSecret: cvat-analytics-secret
-    existingSecretKey: CLICKHOUSE_PASSWORD
+    existingSecretKey: ${CLICKHOUSE_PASSWORD}
   # Consider enabling zookeeper if a distributed configuration is used
   zookeeper:
     enabled: false
@@ -364,13 +364,13 @@ grafana:
         type: 'grafana-clickhouse-datasource'
         isDefault: true
         jsonData:
-          defaultDatabase: cvat
-          port: 9000
-          server: "{{ .Release.Name }}-clickhouse"
-          username: user
+          defaultDatabase: ${CLICKHOUSE_DB}
+          port: ${CLICKHOUSE_PORT}
+          server: ${CLICKHOUSE_HOST}
+          username: ${CLICKHOUSE_USER}
           tlsSkipVerify: false
         secureJsonData:
-          password: user
+          password: ${CLICKHOUSE_PASSWORD}
         editable: false
   dashboardProviders:
     dashboardproviders.yaml:

@@ -64,4 +64,5 @@ cvat-core/reports
 .husky
 
 *.iml
+*.env
 
