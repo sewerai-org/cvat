@@ -300,6 +300,10 @@ services:
     container_name: cvat_vector
     image: timberio/vector:0.26.0-alpine
     restart: always
+    environment:
+      VECTOR_LOG: debug
+    env_file:
+      - .env
     networks:
       cvat:
         aliases:
