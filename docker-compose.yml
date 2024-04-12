@@ -305,7 +305,7 @@ services:
     image: timberio/vector:0.26.0-alpine
     restart: always
     environment:
-      VECTOR_LOG: debug
+      VECTOR_LOG: info
     env_file:
       - .env
     networks:
@@ -318,6 +318,8 @@ services:
   cvat_grafana:
     image: grafana/grafana-oss:10.1.2
     container_name: cvat_grafana
+    env_file:
+      - .env
     environment:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
       - GF_AUTH_BASIC_ENABLED=false
