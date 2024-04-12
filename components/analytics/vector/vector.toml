@@ -15,12 +15,12 @@ encoding = "json"
 [sinks.clickhouse]
 inputs = [ "http-events" ]
 type = "clickhouse"
-database = "CLICKHOUSE_Db"
+database = "${CLICKHOUSE_DB}"
 table = "events"
 auth.strategy = "bearer"
-auth.user = "$CLICKHOUSE_USER"
-auth.password = "$CLICKHOUSE_PASSWORD"
-endpoint = "https://$CLICKHOUSE_HOST:$CLICKHOUSE_PORT"
+auth.user = "${CLICKHOUSE_USER}"
+auth.password = "${CLICKHOUSE_PASSWORD}"
+endpoint = "https://${CLICKHOUSE_HOST}:${CLICKHOUSE_PORT}"
 request.concurrency = "adaptive"
 encoding.only_fields = [
     "scope",

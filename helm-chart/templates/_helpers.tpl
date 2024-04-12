@@ -127,7 +127,7 @@ Create the name of the service account to use
 - name: DJANGO_LOG_SERVER_PORT
   value: "80"
 - name: CLICKHOUSE_HOST
-  value: "{{ .Values.grafana.datasources.datasources.yaml }}-clickhouse"
+  value: "{{ .Values.grafana.datasources.datasources.yaml }}"
 {{- end }}
 
 - name: SMOKESCREEN_OPTS
