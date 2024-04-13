@@ -271,3 +271,11 @@ sudo chmod +x nuctl-1.11.24-linux-amd64
 sudo ln -sf $(pwd)/nuctl-1.11.24-linux-amd64 /usr/local/bin/nuctl
 cd serverless && ./deploy_gpu.sh pytorch/facebookresearch/sam/nuclio/
 ```
+
+## Run locally
+* Set up template-env file as .env
+* Run `./run-local.sh`
+
+## Deploy to ec2 server
+* Set up template-env file as .env
+* run `./deploy_prod_gpu.sh`

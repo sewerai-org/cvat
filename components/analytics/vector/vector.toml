@@ -3,6 +3,13 @@ type = "http_server"
 address = "0.0.0.0:80"
 encoding = "json"
 
+[transforms.convert_timestamp]
+type = "remap"
+inputs = ["http-events"]
+source = '''
+.timestamp = to_unix_timestamp(to_timestamp!(to_float!(.timestamp) * 1000))
+'''
+
 # Uncomment for debug
 # [sinks.console]
 # type = "console"
@@ -13,14 +20,14 @@ encoding = "json"
 # codec = "json"
 
 [sinks.clickhouse]
-inputs = [ "http-events" ]
+inputs = [ "convert_timestamp" ]
 type = "clickhouse"
 database = "${CLICKHOUSE_DB}"
 table = "events"
 auth.strategy = "basic"
 auth.user = "${CLICKHOUSE_USER}"
 auth.password = "${CLICKHOUSE_PASSWORD}"
-endpoint = "http://${CLICKHOUSE_HOST}:8123"
+endpoint = "https://${CLICKHOUSE_HOST}:${CLICKHOUSE_PORT}"
 request.concurrency = "adaptive"
 encoding.only_fields = [
     "scope",
