@@ -1,5 +1,5 @@
 // Copyright (C) 2020-2022 Intel Corporation
-// Copyright (C) 2022 CVAT.ai Corporation
+// Copyright (C) 2022-2024 CVAT.ai Corporation
 //
 // SPDX-License-Identifier: MIT
 
@@ -16,6 +16,7 @@ import { updateHistoryFromQuery } from 'components/resource-sorting-filtering';
 import TaskListContainer from 'containers/tasks-page/tasks-list';
 import { getTasksAsync } from 'actions/tasks-actions';
 import mixpanel from 'mixpanel-browser';
+import { anySearch } from 'utils/any-search';
 
 import TopBar from './top-bar';
 import EmptyListComponent from './empty-list';
@@ -59,6 +60,8 @@ function TasksPageComponent(props: Props): JSX.Element {
         }
     }, [query]);
 
+    const isAnySearch = anySearch<TasksQuery>(query);
+
     const content = count ? (
         <>
             <TaskListContainer />
@@ -82,7 +85,7 @@ function TasksPageComponent(props: Props): JSX.Element {
             </Row>
         </>
     ) : (
-        <EmptyListComponent query={query} />
+        <EmptyListComponent notFound={isAnySearch} />
     );
 
     return (

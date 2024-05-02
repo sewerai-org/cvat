@@ -11,9 +11,9 @@ import mixpanel from 'mixpanel-browser';
 const cvat = getCore();
 
 export enum AuthActionTypes {
-    AUTHORIZED_REQUEST = 'AUTHORIZED_REQUEST',
-    AUTHORIZED_SUCCESS = 'AUTHORIZED_SUCCESS',
-    AUTHORIZED_FAILED = 'AUTHORIZED_FAILED',
+    AUTHENTICATED_REQUEST = 'AUTHENTICATED_REQUEST',
+    AUTHENTICATED_SUCCESS = 'AUTHENTICATED_SUCCESS',
+    AUTHENTICATED_FAILED = 'AUTHENTICATED_FAILED',
     LOGIN = 'LOGIN',
     LOGIN_SUCCESS = 'LOGIN_SUCCESS',
     LOGIN_FAILED = 'LOGIN_FAILED',
@@ -36,9 +36,9 @@ export enum AuthActionTypes {
 }
 
 export const authActions = {
-    authorizeRequest: () => createAction(AuthActionTypes.AUTHORIZED_REQUEST),
-    authorizeSuccess: (user: User | null) => createAction(AuthActionTypes.AUTHORIZED_SUCCESS, { user }),
-    authorizeFailed: (error: any) => createAction(AuthActionTypes.AUTHORIZED_FAILED, { error }),
+    authenticatedRequest: () => createAction(AuthActionTypes.AUTHENTICATED_REQUEST),
+    authenticatedSuccess: (user: User | null) => createAction(AuthActionTypes.AUTHENTICATED_SUCCESS, { user }),
+    authenticatedFailed: (error: any) => createAction(AuthActionTypes.AUTHENTICATED_FAILED, { error }),
     login: () => createAction(AuthActionTypes.LOGIN),
     loginSuccess: (user: User) => createAction(AuthActionTypes.LOGIN_SUCCESS, { user }),
     loginFailed: (error: any, hasEmailVerificationBeenSent = false) => (
@@ -134,19 +134,19 @@ export const logoutAsync = (): ThunkAction => async (dispatch) => {
     }
 };
 
-export const authorizedAsync = (): ThunkAction => async (dispatch) => {
+export const authenticatedAsync = (): ThunkAction => async (dispatch) => {
     try {
-        dispatch(authActions.authorizeRequest());
-        const result = await cvat.server.authorized();
+        dispatch(authActions.authenticatedRequest());
+        const result = await cvat.server.authenticated();
         if (result) {
             const userInstance = (await cvat.users.get({ self: true }))[0];
-            window.LogRocket.identify(userInstance.username);
-            dispatch(authActions.authorizeSuccess(userInstance));
+            dispatch(authActions.authenticatedSuccess(userInstance));
+            dispatch(authActions.authenticatedSuccess(userInstance));
         } else {
-            dispatch(authActions.authorizeSuccess(null));
+            dispatch(authActions.authenticatedSuccess(null));
         }
     } catch (error) {
-        dispatch(authActions.authorizeFailed(error));
+        dispatch(authActions.authenticatedFailed(error));
     }
 };
 
