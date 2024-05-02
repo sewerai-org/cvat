@@ -1083,6 +1083,8 @@ class CanvasWrapperComponent extends React.PureComponent<Props> {
 
         const brushKeyMap = {
             SELECT_MASK_ERASER: keyMap.SELECT_MASK_ERASER,
+            INCREASE_BRUSH_SIZE: keyMap.INCREASE_BRUSH_SIZE,
+            DECREASE_BRUSH_SIZE: keyMap.DECREASE_BRUSH_SIZE,
         };
 
         const handlers = {

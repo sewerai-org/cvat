@@ -424,26 +424,27 @@ export class MasksHandlerImpl implements MasksHandler {
                 }
             }
 
-            if (isBrushSizeChanging && ['brush', 'eraser'].includes(tool?.type)) {
-                const xDiff = e.pointer.x - this.resizeBrushToolLatestX;
-                let onUpdateConfiguration = null;
-                if (this.isDrawing) {
-                    onUpdateConfiguration = this.drawData.onUpdateConfiguration;
-                } else if (this.isEditing) {
-                    onUpdateConfiguration = this.editData.onUpdateConfiguration;
-                }
-                if (onUpdateConfiguration) {
-                    onUpdateConfiguration({
-                        brushTool: {
-                            size: Math.trunc(Math.max(1, this.tool.size + xDiff)),
-                        },
-                    });
-                }
-
-                this.resizeBrushToolLatestX = e.pointer.x;
-                e.e.stopPropagation();
-                return;
-            }
+            // Changed this to hot key [ (increase) and ] (decrease)
+            // if (isBrushSizeChanging && ['brush', 'eraser'].includes(tool?.type)) {
+            //     const xDiff = e.pointer.x - this.resizeBrushToolLatestX;
+            //     let onUpdateConfiguration = null;
+            //     if (this.isDrawing) {
+            //         onUpdateConfiguration = this.drawData.onUpdateConfiguration;
+            //     } else if (this.isEditing) {
+            //         onUpdateConfiguration = this.editData.onUpdateConfiguration;
+            //     }
+            //     if (onUpdateConfiguration) {
+            //         onUpdateConfiguration({
+            //             brushTool: {
+            //                 size: Math.trunc(Math.max(1, this.tool.size + xDiff)),
+            //             },
+            //         });
+            //     }
+            //
+            //     this.resizeBrushToolLatestX = e.pointer.x;
+            //     e.e.stopPropagation();
+            //     return;
+            // }
 
             if (this.brushMarker) {
                 this.brushMarker.left = position.x - tool.size / 2;

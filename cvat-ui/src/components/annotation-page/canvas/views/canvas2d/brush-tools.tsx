@@ -86,6 +86,14 @@ function BrushTools(props: Props): React.ReactPortal | null {
                 setBrushForm('square');
             }
         },
+        INCREASE_BRUSH_SIZE: (event: KeyboardEvent | undefined) => {
+            if (event) event.preventDefault();
+            setBrushSize(brushSize + 1);
+        },
+        DECREASE_BRUSH_SIZE: (event: KeyboardEvent | undefined) => {
+            if (event) event.preventDefault();
+            setBrushSize(Math.max(MIN_BRUSH_SIZE, brushSize - 1));
+        },
     };
 
     const onBlockUpdated = useCallback((blockedToolsConfiguration: typeof blockedTools) => {
@@ -296,7 +304,7 @@ function BrushTools(props: Props): React.ReactPortal | null {
                 disabled={blockedTools['polygon-minus']}
             />
             { ['brush', 'eraser'].includes(currentTool) ? (
-                <CVATTooltip title='Brush size [Hold Alt + Right Mouse Click + Drag Left/Right]'>
+                <CVATTooltip title='Brush size [ to increase, ] to decrease'>
                     <InputNumber
                         className='cvat-brush-tools-brush-size'
                         value={brushSize}

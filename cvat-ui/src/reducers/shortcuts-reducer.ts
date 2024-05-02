@@ -414,6 +414,18 @@ const defaultKeyMap = ({
         sequences: ['shift+e'],
         action: 'keydown',
     },
+    INCREASE_BRUSH_SIZE: {
+        name: 'Increase brush size',
+        description: 'Increase the size of the paintbrush the mask brush tools',
+        sequences: ['['],
+        action: 'keydown',
+    },
+    DECREASE_BRUSH_SIZE: {
+        name: 'Decrease brush size',
+        description: 'Decrease the size of the paintbrush the mask brush tools',
+        sequences: [']'],
+        action: 'keydown',
+    },
 } as any) as KeyMap;
 
 const defaultState: ShortcutsState = {
