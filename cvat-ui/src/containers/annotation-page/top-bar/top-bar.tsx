@@ -197,16 +197,17 @@ function mapDispatchToProps(dispatch: any): DispatchToProps {
                 isEmptyFrame: boolean;
             },
         ): void {
-            dispatch(searchAnnotationsAsync(sessionInstance, frameFrom, frameTo, generalFilters)).then((frame: number | null) => {
-                if (frame != null) {
-                    mixpanel.track('Searched for annotation frame',
-                        {
-                            jobId: sessionInstance.jobId,
-                            oldFrame: frameFrom,
-                            newFrame: frame,
-                        });
-                }
-            });
+            dispatch(searchAnnotationsAsync(sessionInstance, frameFrom, frameTo, generalFilters)).then(
+                (frame: number | null) => {
+                    if (frame != null) {
+                        mixpanel.track('Searched for annotation frame',
+                            {
+                                jobId: sessionInstance.jobId,
+                                oldFrame: frameFrom,
+                                newFrame: frame,
+                            });
+                    }
+                });
         },
         changeWorkspace(workspace: Workspace): void {
             dispatch(changeWorkspaceAction(workspace));
