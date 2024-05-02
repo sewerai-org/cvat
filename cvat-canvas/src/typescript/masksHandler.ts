@@ -90,12 +90,12 @@ export class MasksHandlerImpl implements MasksHandler {
                 opacity: 0.75,
                 left: this.latestMousePos.x - this.tool.size / 2,
                 top: this.latestMousePos.y - this.tool.size / 2,
-                stroke: 'white',
                 strokeWidth: 1,
+                stroke: 'white',
             };
             this.brushMarker = this.tool.form === 'circle' ? new fabric.Circle({
                 ...common,
-                radius: this.tool.size / 2,
+                radius: Math.round(this.tool.size / 2),
             }) : new fabric.Rect({
                 ...common,
                 width: this.tool.size,
@@ -138,7 +138,6 @@ export class MasksHandlerImpl implements MasksHandler {
         this.isInsertion = false;
         this.redraw = null;
         this.drawnObjects = this.createDrawnObjectsArray();
-        this.onDrawDone(null);
     }
 
     private releaseEdit(): void {
@@ -425,26 +424,27 @@ export class MasksHandlerImpl implements MasksHandler {
                 }
             }
 
-            if (isBrushSizeChanging && ['brush', 'eraser'].includes(tool?.type)) {
-                const xDiff = e.pointer.x - this.resizeBrushToolLatestX;
-                let onUpdateConfiguration = null;
-                if (this.isDrawing) {
-                    onUpdateConfiguration = this.drawData.onUpdateConfiguration;
-                } else if (this.isEditing) {
-                    onUpdateConfiguration = this.editData.onUpdateConfiguration;
-                }
-                if (onUpdateConfiguration) {
-                    onUpdateConfiguration({
-                        brushTool: {
-                            size: Math.trunc(Math.max(1, this.tool.size + xDiff)),
-                        },
-                    });
-                }
-
-                this.resizeBrushToolLatestX = e.pointer.x;
-                e.e.stopPropagation();
-                return;
-            }
+            // Changed this to hot key [ (increase) and ] (decrease)
+            // if (isBrushSizeChanging && ['brush', 'eraser'].includes(tool?.type)) {
+            //     const xDiff = e.pointer.x - this.resizeBrushToolLatestX;
+            //     let onUpdateConfiguration = null;
+            //     if (this.isDrawing) {
+            //         onUpdateConfiguration = this.drawData.onUpdateConfiguration;
+            //     } else if (this.isEditing) {
+            //         onUpdateConfiguration = this.editData.onUpdateConfiguration;
+            //     }
+            //     if (onUpdateConfiguration) {
+            //         onUpdateConfiguration({
+            //             brushTool: {
+            //                 size: Math.trunc(Math.max(1, this.tool.size + xDiff)),
+            //             },
+            //         });
+            //     }
+            //
+            //     this.resizeBrushToolLatestX = e.pointer.x;
+            //     e.e.stopPropagation();
+            //     return;
+            // }
 
             if (this.brushMarker) {
                 this.brushMarker.left = position.x - tool.size / 2;
@@ -474,7 +474,7 @@ export class MasksHandlerImpl implements MasksHandler {
                 if (tool.form === 'circle') {
                     shape = new fabric.Circle({
                         ...shapeProperties,
-                        radius: tool.size / 2,
+                        radius: Math.round(tool.size / 2),
                     });
                 } else if (tool.form === 'square') {
                     shape = new fabric.Rect({
@@ -614,6 +614,8 @@ export class MasksHandlerImpl implements MasksHandler {
                             ...(Number.isInteger(this.redraw) ? { clientID: this.redraw } : {}),
                         }, Date.now() - this.startTimestamp, drawData.continue, this.drawData);
                     }
+                } else {
+                    this.onDrawDone(null);
                 }
             } finally {
                 this.releaseDraw();
@@ -627,6 +629,8 @@ export class MasksHandlerImpl implements MasksHandler {
                     enabled: true,
                     shapeType: 'mask',
                 };
+
+                this.onDrawRepeat({ enabled: true, shapeType: 'mask' });
                 this.onDrawRepeat(newDrawData);
                 return;
             }

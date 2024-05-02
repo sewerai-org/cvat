@@ -86,6 +86,14 @@ function BrushTools(props: Props): React.ReactPortal | null {
                 setBrushForm('square');
             }
         },
+        INCREASE_BRUSH_SIZE: (event: KeyboardEvent | undefined) => {
+            if (event) event.preventDefault();
+            setBrushSize(brushSize + 1);
+        },
+        DECREASE_BRUSH_SIZE: (event: KeyboardEvent | undefined) => {
+            if (event) event.preventDefault();
+            setBrushSize(Math.max(MIN_BRUSH_SIZE, brushSize - 1));
+        },
     };
 
     const onBlockUpdated = useCallback((blockedToolsConfiguration: typeof blockedTools) => {
@@ -103,7 +111,6 @@ function BrushTools(props: Props): React.ReactPortal | null {
 
     useEffect(() => {
         const label = labels.find((_label: any) => _label.id === defaultLabelID);
-        getCore().config.removeUnderlyingMaskPixels.enabled = removeUnderlyingPixels;
         if (visible && label && canvasInstance instanceof Canvas) {
             const onUpdateConfiguration = ({ brushTool }: any): void => {
                 if (brushTool?.size) {
@@ -143,6 +150,10 @@ function BrushTools(props: Props): React.ReactPortal | null {
     }, [currentTool, brushSize, brushForm, visible, defaultLabelID, editableState]);
 
     useEffect(() => {
+        getCore().config.removeUnderlyingMaskPixels.enabled = removeUnderlyingPixels;
+    }, [removeUnderlyingPixels]);
+
+    useEffect(() => {
         setApplicableLabels(filterApplicableForType(LabelType.MASK, labels));
     }, [labels]);
 
@@ -152,6 +163,10 @@ function BrushTools(props: Props): React.ReactPortal | null {
             const { offsetTop, offsetLeft } = canvasContainer.parentElement as HTMLElement;
             setTopLeft([offsetTop, offsetLeft]);
         }
+
+        return () => {
+            dispatch(updateCanvasBrushTools({ visible: false }));
+        };
     }, []);
 
     useEffect(() => {
@@ -289,7 +304,7 @@ function BrushTools(props: Props): React.ReactPortal | null {
                 disabled={blockedTools['polygon-minus']}
             />
             { ['brush', 'eraser'].includes(currentTool) ? (
-                <CVATTooltip title='Brush size [Hold Alt + Right Mouse Click + Drag Left/Right]'>
+                <CVATTooltip title='Brush size [ to increase, ] to decrease'>
                     <InputNumber
                         className='cvat-brush-tools-brush-size'
                         value={brushSize}

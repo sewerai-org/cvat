@@ -28,6 +28,7 @@ interface Props {
 async function openAllJobsInNewTabs(jobs: Job[]): Promise<void> {
     for (const job of jobs) {
         window.open(`/tasks/${job.taskId}/jobs/${job.id}`, '_blank');
+        // eslint-disable-next-line no-promise-executor-return
         await new Promise((resolve) => setTimeout(() => resolve(), 750));
     }
 }

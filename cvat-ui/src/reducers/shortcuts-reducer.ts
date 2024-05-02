@@ -81,6 +81,12 @@ const defaultKeyMap = ({
         sequences: ['q', '/'],
         action: 'keydown',
     },
+    SWITCH_PINNED: {
+        name: 'Switch pinned property',
+        description: 'Change pinned property for an active object',
+        sequences: ['p'],
+        action: 'keydown',
+    },
     SWITCH_KEYFRAME: {
         name: 'Switch keyframe',
         description: 'Change keyframe property for an active track',
@@ -406,6 +412,18 @@ const defaultKeyMap = ({
         name: 'Select mask eraser',
         description: 'Toggle between the paintbrush and the eraser on the mask brush tools',
         sequences: ['shift+e'],
+        action: 'keydown',
+    },
+    INCREASE_BRUSH_SIZE: {
+        name: 'Increase brush size',
+        description: 'Increase the size of the paintbrush the mask brush tools',
+        sequences: ['['],
+        action: 'keydown',
+    },
+    DECREASE_BRUSH_SIZE: {
+        name: 'Decrease brush size',
+        description: 'Decrease the size of the paintbrush the mask brush tools',
+        sequences: [']'],
         action: 'keydown',
     },
 } as any) as KeyMap;

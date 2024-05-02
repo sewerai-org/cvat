@@ -13,6 +13,7 @@ import Button from 'antd/lib/button';
 
 import './styles.scss';
 import AttributeAnnotationWorkspace from 'components/annotation-page/attribute-annotation-workspace/attribute-annotation-workspace';
+import SingleShapeWorkspace from 'components/annotation-page/single-shape-workspace/single-shape-workspace';
 import ReviewAnnotationsWorkspace from 'components/annotation-page/review-workspace/review-workspace';
 import StandardWorkspaceComponent from 'components/annotation-page/standard-workspace/standard-workspace';
 import StandardWorkspace3DComponent from 'components/annotation-page/standard3D-workspace/standard3D-workspace';
@@ -28,6 +29,7 @@ import mixpanel from 'mixpanel-browser';
 interface Props {
     job: any | null | undefined;
     fetching: boolean;
+    annotationsInitialized: boolean;
     frameNumber: number;
     workspace: Workspace;
     getJob(): void;
@@ -38,7 +40,7 @@ interface Props {
 
 export default function AnnotationPageComponent(props: Props): JSX.Element {
     const {
-        job, fetching, workspace, frameNumber, getJob, closeJob, saveLogs, changeFrame,
+        job, fetching, annotationsInitialized, workspace, frameNumber, getJob, closeJob, saveLogs, changeFrame,
     } = props;
     const prevJob = usePrevious(job);
     const prevFetching = usePrevious(fetching);
@@ -129,7 +131,7 @@ export default function AnnotationPageComponent(props: Props): JSX.Element {
         }
     }, [job, fetching, prevJob, prevFetching]);
 
-    if (job === null) {
+    if (job === null || !annotationsInitialized) {
         return <Spin size='large' className='cvat-spinner' />;
     }
 
@@ -152,9 +154,10 @@ export default function AnnotationPageComponent(props: Props): JSX.Element {
             <Layout.Content className='cvat-annotation-layout-content'>
                 {workspace === Workspace.STANDARD3D && <StandardWorkspace3DComponent />}
                 {workspace === Workspace.STANDARD && <StandardWorkspaceComponent />}
-                {workspace === Workspace.ATTRIBUTE_ANNOTATION && <AttributeAnnotationWorkspace />}
-                {workspace === Workspace.TAG_ANNOTATION && <TagAnnotationWorkspace />}
-                {workspace === Workspace.REVIEW_WORKSPACE && <ReviewAnnotationsWorkspace />}
+                {workspace === Workspace.SINGLE_SHAPE && <SingleShapeWorkspace />}
+                {workspace === Workspace.ATTRIBUTES && <AttributeAnnotationWorkspace />}
+                {workspace === Workspace.TAGS && <TagAnnotationWorkspace />}
+                {workspace === Workspace.REVIEW && <ReviewAnnotationsWorkspace />}
             </Layout.Content>
             <FiltersModalComponent />
             <StatisticsModalComponent />
