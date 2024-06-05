@@ -197,6 +197,11 @@ const defaultKeyMap = ({
         sequences: ['alt+m'],
         action: 'keydown',
     },
+    SWITCH_WORKSPACE: {
+        name: 'Switch between Review and Annotation workspace',
+        description: 'Switch between Review workspace and Standard Annotation workspace',
+        sequences: ['shift+m']
+    },
     SWITCH_GROUP_MODE: {
         name: 'Group mode',
         description: 'Activate or deactivate mode to grouping shapes',
