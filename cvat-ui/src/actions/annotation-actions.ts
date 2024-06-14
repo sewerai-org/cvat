@@ -880,10 +880,21 @@ export function resetCanvas(): AnyAction {
 }
 
 export function closeJob(): ThunkAction {
-    return async (dispatch: ActionCreator<Dispatch>): Promise<void> => {
-        const { jobInstance } = receiveAnnotationsParameters();
+    return async (dispatch: ActionCreator<Dispatch>, getState): Promise<void> => {
+        const state = getState();
+        const { instance: canvasInstance } = state.annotation.canvas;
+        const { jobInstance, groundTruthInstance } = receiveAnnotationsParameters();
+
+        if (groundTruthInstance) {
+            await groundTruthInstance.close();
+        }
+
         if (jobInstance) {
             await jobInstance.close();
+        }
+
+        if (canvasInstance) {
+            canvasInstance.destroy();
         }
 
         dispatch({
@@ -929,14 +940,7 @@ export function getJobAsync({
                 throw new Error('Requested resource id is not valid');
             }
 
-            const loadJobEvent = await logger.log(
-                EventScope.loadJob,
-                {
-                    task_id: taskID,
-                    job_id: jobID,
-                },
-                true,
-            );
+            const loadJobEvent = await logger.log(EventScope.loadJob, {}, true);
 
             getCore().config.globalObjectsCounter = 0;
             const [job] = await cvat.jobs.get({ jobID });
@@ -983,7 +987,12 @@ export function getJobAsync({
                 }
             }
 
-            loadJobEvent.close(await jobInfoGenerator(job));
+            loadJobEvent.close({
+                ...await jobInfoGenerator(job),
+                jobID: job.id,
+                taskID: job.taskId,
+                projectID: job.projectId,
+            });
 
             const openTime = Date.now();
             dispatch({

@@ -22,7 +22,7 @@ from cvat.apps.events.handlers import handle_annotations_change
 from cvat.apps.profiler import silk_profile
 
 from cvat.apps.dataset_manager.annotation import AnnotationIR, AnnotationManager
-from cvat.apps.dataset_manager.bindings import TaskData, JobData, CvatImportError
+from cvat.apps.dataset_manager.bindings import TaskData, JobData, CvatImportError, CvatDatasetNotFoundError
 from cvat.apps.dataset_manager.formats.registry import make_exporter, make_importer
 from cvat.apps.dataset_manager.util import add_prefetch_fields, bulk_create, get_cached
 
@@ -48,7 +48,7 @@ class PatchAction(str, Enum):
     def __str__(self):
         return self.value
 
-def _merge_table_rows(rows, keys_for_merge, field_id):
+def merge_table_rows(rows, keys_for_merge, field_id):
     # It is necessary to keep a stable order of original rows
     # (e.g. for tracked boxes). Otherwise prev_box.frame can be bigger
     # than next_box.frame.
@@ -506,7 +506,7 @@ class JobAnnotation:
             'labeledimageattributeval__id',
         ).order_by('frame').iterator(chunk_size=2000)
 
-        db_tags = _merge_table_rows(
+        db_tags = merge_table_rows(
             rows=db_tags,
             keys_for_merge={
                 "labeledimageattributeval_set": [
@@ -546,7 +546,7 @@ class JobAnnotation:
             'labeledshapeattributeval__id',
         ).order_by('frame').iterator(chunk_size=2000)
 
-        db_shapes = _merge_table_rows(
+        db_shapes = merge_table_rows(
             rows=db_shapes,
             keys_for_merge={
                 'labeledshapeattributeval_set': [
@@ -604,7 +604,7 @@ class JobAnnotation:
             "trackedshape__trackedshapeattributeval__id",
         ).order_by('id', 'trackedshape__frame').iterator(chunk_size=2000)
 
-        db_tracks = _merge_table_rows(
+        db_tracks = merge_table_rows(
             rows=db_tracks,
             keys_for_merge={
                 "labeledtrackattributeval_set": [
@@ -632,7 +632,7 @@ class JobAnnotation:
         tracks = {}
         elements = {}
         for db_track in db_tracks:
-            db_track["trackedshape_set"] = _merge_table_rows(db_track["trackedshape_set"], {
+            db_track["trackedshape_set"] = merge_table_rows(db_track["trackedshape_set"], {
                 'trackedshapeattributeval_set': [
                     'trackedshapeattributeval__value',
                     'trackedshapeattributeval__spec_id',
@@ -708,7 +708,7 @@ class JobAnnotation:
         with TemporaryDirectory(dir=temp_dir_base) as temp_dir:
             try:
                 importer(src_file, temp_dir, job_data, **options)
-            except DatasetNotFoundError as not_found:
+            except (DatasetNotFoundError, CvatDatasetNotFoundError) as not_found:
                 if settings.CVAT_LOG_IMPORT_ERRORS:
                     dlogger.log_import_error(
                         entity="job",
@@ -820,7 +820,7 @@ class TaskAnnotation:
         with TemporaryDirectory(dir=temp_dir_base) as temp_dir:
             try:
                 importer(src_file, temp_dir, task_data, **options)
-            except DatasetNotFoundError as not_found:
+            except (DatasetNotFoundError, CvatDatasetNotFoundError) as not_found:
                 if settings.CVAT_LOG_IMPORT_ERRORS:
                     dlogger.log_import_error(
                         entity="task",
