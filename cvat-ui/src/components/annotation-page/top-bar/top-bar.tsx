@@ -31,6 +31,7 @@ interface Props {
     workspace: Workspace;
     undoShortcut: string;
     redoShortcut: string;
+    changeWorkspaceShortcut: string;
     drawShortcut: string;
     switchToolsBlockerShortcut: string;
     playPauseShortcut: string;
@@ -90,6 +91,7 @@ export default function AnnotationTopBarComponent(props: Props): JSX.Element {
         workspace,
         undoShortcut,
         redoShortcut,
+        changeWorkspaceShortcut,
         drawShortcut,
         switchToolsBlockerShortcut,
         playPauseShortcut,
@@ -225,6 +227,8 @@ export default function AnnotationTopBarComponent(props: Props): JSX.Element {
                 changeWorkspace={changeWorkspace}
                 showStatistics={showStatistics}
                 showFilters={showFilters}
+                changeWorkspaceShortcut={changeWorkspaceShortcut}
+                keyMap={keyMap}
             />
         </Row>
     );

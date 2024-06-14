@@ -19,8 +19,11 @@ import {
 import { Workspace } from 'reducers';
 
 import MDEditor from '@uiw/react-md-editor';
+import GlobalHotKeys, { KeyMap } from "utils/mousetrap-react";
+import CVATTooltip from "../../common/cvat-tooltip";
 
 interface Props {
+    changeWorkspaceShortcut: string;
     showStatistics(): void;
     showFilters(): void;
     changeWorkspace(workspace: Workspace): void;
@@ -28,10 +31,12 @@ interface Props {
     workspace: Workspace;
     annotationFilters: object[];
     initialOpenGuide: boolean;
+    keyMap: KeyMap;
 }
 
 function RightGroup(props: Props): JSX.Element {
     const {
+        changeWorkspaceShortcut,
         showStatistics,
         changeWorkspace,
         showFilters,
@@ -39,13 +44,14 @@ function RightGroup(props: Props): JSX.Element {
         jobInstance,
         annotationFilters,
         initialOpenGuide,
+        keyMap,
     } = props;
 
     const filters = annotationFilters.length;
 
     const openGuide = useCallback(() => {
         const PADDING = Math.min(window.screen.availHeight, window.screen.availWidth) * 0.4;
-        jobInstance.guide().then((guide) => {
+        jobInstance.guide().then((guide: any) => {
             if (guide?.markdown) {
                 Modal.info({
                     icon: null,
@@ -103,8 +109,27 @@ function RightGroup(props: Props): JSX.Element {
         }
     }, []);
 
+    const subKeyMap = {
+        CHANGE_WORKSPACE: keyMap.CHANGE_WORKSPACE,
+    };
+
+    console.log(`Current workspace ${workspace}`);
+
+    const handlers = {
+        CHANGE_WORKSPACE: (event: KeyboardEvent | undefined) => {
+            event?.preventDefault();
+            const enumValues = Object.values(Workspace);
+            const index = enumValues.indexOf(workspace);
+            const nextWorkspace = enumValues[(index + 1)%enumValues.length];
+            console.log(`Changing to ${nextWorkspace}`)
+            changeWorkspace(nextWorkspace)
+        },
+    };
+
     return (
-        <Col className='cvat-annotation-header-right-group'>
+        <>
+            <GlobalHotKeys keyMap={subKeyMap} handlers={handlers} />
+            <Col className='cvat-annotation-header-right-group'>
             <Button
                 type='link'
                 className='cvat-annotation-header-fullscreen-button cvat-annotation-header-button'
@@ -150,6 +175,7 @@ function RightGroup(props: Props): JSX.Element {
                 Filters
             </Button>
             <div>
+                <CVATTooltip overlay={`Change Workspace: ${changeWorkspaceShortcut}`}>
                 <Select
                     popupClassName='cvat-workspace-selector-dropdown'
                     className='cvat-workspace-selector'
@@ -177,8 +203,10 @@ function RightGroup(props: Props): JSX.Element {
                         return null;
                     })}
                 </Select>
+                </CVATTooltip>
             </div>
         </Col>
+        </>
     );
 }
 

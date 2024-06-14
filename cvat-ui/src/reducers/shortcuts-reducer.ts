@@ -426,6 +426,12 @@ const defaultKeyMap = ({
         sequences: [']'],
         action: 'keydown',
     },
+    CHANGE_WORKSPACE: {
+        name: 'Change workspace',
+        description: 'Change workspace to next workspace type in list',
+        sequences: ['shift+w'],
+        action: 'keydown'
+    }
 } as any) as KeyMap;
 
 const defaultState: ShortcutsState = {
