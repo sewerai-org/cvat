@@ -34,7 +34,6 @@ interface Props {
     changeWorkspaceShortcut: string;
     drawShortcut: string;
     switchToolsBlockerShortcut: string;
-    playPauseShortcut: string;
     deleteFrameShortcut: string;
     nextFrameShortcut: string;
     previousFrameShortcut: string;
@@ -94,7 +93,6 @@ export default function AnnotationTopBarComponent(props: Props): JSX.Element {
         changeWorkspaceShortcut,
         drawShortcut,
         switchToolsBlockerShortcut,
-        playPauseShortcut,
         deleteFrameShortcut,
         nextFrameShortcut,
         previousFrameShortcut,
@@ -149,7 +147,6 @@ export default function AnnotationTopBarComponent(props: Props): JSX.Element {
         <PlayerButtons
             key='player_buttons'
             playing={playing}
-            playPauseShortcut={playPauseShortcut}
             nextFrameShortcut={nextFrameShortcut}
             previousFrameShortcut={previousFrameShortcut}
             forwardShortcut={forwardShortcut}

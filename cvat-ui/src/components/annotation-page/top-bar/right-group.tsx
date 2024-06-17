@@ -19,8 +19,8 @@ import {
 import { Workspace } from 'reducers';
 
 import MDEditor from '@uiw/react-md-editor';
-import GlobalHotKeys, { KeyMap } from "utils/mousetrap-react";
-import CVATTooltip from "../../common/cvat-tooltip";
+import GlobalHotKeys, { KeyMap } from 'utils/mousetrap-react';
+import CVATTooltip from '../../common/cvat-tooltip';
 
 interface Props {
     changeWorkspaceShortcut: string;
@@ -113,16 +113,20 @@ function RightGroup(props: Props): JSX.Element {
         CHANGE_WORKSPACE: keyMap.CHANGE_WORKSPACE,
     };
 
-    console.log(`Current workspace ${workspace}`);
+    const workspaceOptions = Object.values(Workspace).filter((ws) => (
+        jobInstance.dimension === DimensionType.DIMENSION_3D && ws !== Workspace.STANDARD
+    ) ||
+        (
+            jobInstance.dimension !== DimensionType.DIMENSION_3D && ws !== Workspace.STANDARD3D
+        ),
+    );
 
     const handlers = {
         CHANGE_WORKSPACE: (event: KeyboardEvent | undefined) => {
             event?.preventDefault();
-            const enumValues = Object.values(Workspace);
-            const index = enumValues.indexOf(workspace);
-            const nextWorkspace = enumValues[(index + 1)%enumValues.length];
-            console.log(`Changing to ${nextWorkspace}`)
-            changeWorkspace(nextWorkspace)
+            const index = workspaceOptions.indexOf(workspace);
+            const nextWorkspace = workspaceOptions[(index + 1) % workspaceOptions.length];
+            changeWorkspace(nextWorkspace);
         },
     };
 
@@ -130,82 +134,82 @@ function RightGroup(props: Props): JSX.Element {
         <>
             <GlobalHotKeys keyMap={subKeyMap} handlers={handlers} />
             <Col className='cvat-annotation-header-right-group'>
-            <Button
-                type='link'
-                className='cvat-annotation-header-fullscreen-button cvat-annotation-header-button'
-                onClick={(): void => {
-                    if (window.document.fullscreenEnabled) {
-                        if (window.document.fullscreenElement) {
-                            window.document.exitFullscreen();
-                        } else {
-                            window.document.documentElement.requestFullscreen();
-                        }
-                    }
-                }}
-            >
-                <Icon component={FullscreenIcon} />
-                Fullscreen
-            </Button>
-            { jobInstance.guideId !== null && (
                 <Button
                     type='link'
-                    className='cvat-annotation-header-guide-button cvat-annotation-header-button'
-                    onClick={openGuide}
-                >
-                    <Icon component={GuideIcon} />
-                    Guide
-                </Button>
-            )}
-            <Button
-                type='link'
-                className='cvat-annotation-header-info-button cvat-annotation-header-button'
-                onClick={showStatistics}
-            >
-                <InfoCircleOutlined />
-                Info
-            </Button>
-            <Button
-                type='link'
-                className={`cvat-annotation-header-filters-button cvat-annotation-header-button ${filters ?
-                    'filters-armed' : ''
-                }`}
-                onClick={showFilters}
-            >
-                <Icon component={FilterIcon} />
-                Filters
-            </Button>
-            <div>
-                <CVATTooltip overlay={`Change Workspace: ${changeWorkspaceShortcut}`}>
-                <Select
-                    popupClassName='cvat-workspace-selector-dropdown'
-                    className='cvat-workspace-selector'
-                    onChange={changeWorkspace}
-                    value={workspace}
-                >
-                    {Object.values(Workspace).map((ws) => {
-                        if (jobInstance.dimension === DimensionType.DIMENSION_3D) {
-                            if (ws === Workspace.STANDARD) {
-                                return null;
+                    className='cvat-annotation-header-fullscreen-button cvat-annotation-header-button'
+                    onClick={(): void => {
+                        if (window.document.fullscreenEnabled) {
+                            if (window.document.fullscreenElement) {
+                                window.document.exitFullscreen();
+                            } else {
+                                window.document.documentElement.requestFullscreen();
                             }
-                            return (
-                                <Select.Option disabled={ws !== Workspace.STANDARD3D} key={ws} value={ws}>
-                                    {ws}
-                                </Select.Option>
-                            );
                         }
-                        if (ws !== Workspace.STANDARD3D) {
-                            return (
-                                <Select.Option key={ws} value={ws}>
-                                    {ws}
-                                </Select.Option>
-                            );
-                        }
-                        return null;
-                    })}
-                </Select>
-                </CVATTooltip>
-            </div>
-        </Col>
+                    }}
+                >
+                    <Icon component={FullscreenIcon} />
+                Fullscreen
+                </Button>
+                { jobInstance.guideId !== null && (
+                    <Button
+                        type='link'
+                        className='cvat-annotation-header-guide-button cvat-annotation-header-button'
+                        onClick={openGuide}
+                    >
+                        <Icon component={GuideIcon} />
+                    Guide
+                    </Button>
+                )}
+                <Button
+                    type='link'
+                    className='cvat-annotation-header-info-button cvat-annotation-header-button'
+                    onClick={showStatistics}
+                >
+                    <InfoCircleOutlined />
+                Info
+                </Button>
+                <Button
+                    type='link'
+                    className={`cvat-annotation-header-filters-button cvat-annotation-header-button ${filters ?
+                        'filters-armed' : ''
+                    }`}
+                    onClick={showFilters}
+                >
+                    <Icon component={FilterIcon} />
+                Filters
+                </Button>
+                <div>
+                    <CVATTooltip overlay={`Change Workspace: ${changeWorkspaceShortcut}`}>
+                        <Select
+                            popupClassName='cvat-workspace-selector-dropdown'
+                            className='cvat-workspace-selector'
+                            onChange={changeWorkspace}
+                            value={workspace}
+                        >
+                            {Object.values(Workspace).map((ws) => {
+                                if (jobInstance.dimension === DimensionType.DIMENSION_3D) {
+                                    if (ws === Workspace.STANDARD) {
+                                        return null;
+                                    }
+                                    return (
+                                        <Select.Option disabled={ws !== Workspace.STANDARD3D} key={ws} value={ws}>
+                                            {ws}
+                                        </Select.Option>
+                                    );
+                                }
+                                if (ws !== Workspace.STANDARD3D) {
+                                    return (
+                                        <Select.Option key={ws} value={ws}>
+                                            {ws}
+                                        </Select.Option>
+                                    );
+                                }
+                                return null;
+                            })}
+                        </Select>
+                    </CVATTooltip>
+                </div>
+            </Col>
         </>
     );
 }

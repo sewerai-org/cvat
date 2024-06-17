@@ -27,7 +27,6 @@ import {
 
 interface Props {
     playing: boolean;
-    playPauseShortcut: string;
     nextFrameShortcut: string;
     previousFrameShortcut: string;
     forwardShortcut: string;
@@ -49,7 +48,6 @@ interface Props {
 function PlayerButtons(props: Props): JSX.Element {
     const {
         playing,
-        playPauseShortcut,
         nextFrameShortcut,
         previousFrameShortcut,
         forwardShortcut,
@@ -76,7 +74,6 @@ function PlayerButtons(props: Props): JSX.Element {
             BACKWARD_FRAME: keyMap.BACKWARD_FRAME,
             SEARCH_FORWARD: keyMap.SEARCH_FORWARD,
             SEARCH_BACKWARD: keyMap.SEARCH_BACKWARD,
-            PLAY_PAUSE: keyMap.PLAY_PAUSE,
             FOCUS_INPUT_FRAME: keyMap.FOCUS_INPUT_FRAME,
         } : {}),
     };
@@ -106,10 +103,6 @@ function PlayerButtons(props: Props): JSX.Element {
             SEARCH_BACKWARD: (event: KeyboardEvent | undefined) => {
                 event?.preventDefault();
                 onSearchAnnotations('backward');
-            },
-            PLAY_PAUSE: (event: KeyboardEvent | undefined) => {
-                event?.preventDefault();
-                onSwitchPlay();
             },
         } : {}),
     };
@@ -210,7 +203,7 @@ function PlayerButtons(props: Props): JSX.Element {
             </Popover>
 
             {!playing ? (
-                <CVATTooltip title={`Play ${playPauseShortcut}`}>
+                <CVATTooltip title='Play'>
                     <Icon
                         style={navIconStyle}
                         className='cvat-player-play-button'
@@ -219,7 +212,7 @@ function PlayerButtons(props: Props): JSX.Element {
                     />
                 </CVATTooltip>
             ) : (
-                <CVATTooltip title={`Pause ${playPauseShortcut}`}>
+                <CVATTooltip title='Pause'>
                     <Icon
                         style={navIconStyle}
                         className='cvat-player-pause-button'

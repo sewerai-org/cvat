@@ -299,12 +299,6 @@ const defaultKeyMap = ({
         sequences: ['left'],
         action: 'keydown',
     },
-    PLAY_PAUSE: {
-        name: 'Play/pause',
-        description: 'Start/stop automatic changing frames',
-        sequences: ['space'],
-        action: 'keydown',
-    },
     FOCUS_INPUT_FRAME: {
         name: 'Focus input frame',
         description: 'Focus on the element to change the current frame',
@@ -430,8 +424,8 @@ const defaultKeyMap = ({
         name: 'Change workspace',
         description: 'Change workspace to next workspace type in list',
         sequences: ['shift+w'],
-        action: 'keydown'
-    }
+        action: 'keydown',
+    },
 } as any) as KeyMap;
 
 const defaultState: ShortcutsState = {
