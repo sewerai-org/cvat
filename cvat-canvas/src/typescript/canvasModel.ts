@@ -651,8 +651,12 @@ export class CanvasModelImpl extends MasterImpl implements CanvasModel {
     }
 
     public highlight(clientIDs: number[], severity: HighlightSeverity | null): void {
+        const elementsIDs = clientIDs.filter((id: number): boolean => (
+            this.objects.find((_state: any): boolean => _state.clientID === id)
+        ));
+
         this.data.highlightedElements = {
-            elementsIDs: clientIDs,
+            elementsIDs,
             severity,
         };
 
@@ -712,6 +716,9 @@ export class CanvasModelImpl extends MasterImpl implements CanvasModel {
     }
 
     public draw(drawData: DrawData): void {
+        const supportedShapes = [
+            'rectangle', 'polygon', 'polyline', 'points', 'ellipse', 'cuboid', 'skeleton', 'mask',
+        ];
         if (![Mode.IDLE, Mode.DRAW].includes(this.data.mode)) {
             throw Error(`Canvas is busy. Action: ${this.data.mode}`);
         }
@@ -723,7 +730,13 @@ export class CanvasModelImpl extends MasterImpl implements CanvasModel {
 
             if (!drawData.shapeType && !drawData.initialState) {
                 throw new Error('A shape type is not specified');
-            } else if (typeof drawData.numberOfPoints !== 'undefined') {
+            }
+
+            if (drawData.shapeType && !supportedShapes.includes(drawData.shapeType)) {
+                throw new Error(`Drawing method for type "${drawData.shapeType}" is not implemented`);
+            }
+
+            if (typeof drawData.numberOfPoints !== 'undefined') {
                 if (drawData.shapeType === 'polygon' && drawData.numberOfPoints < 3) {
                     throw new Error('A polygon consists of at least 3 points');
                 } else if (drawData.shapeType === 'polyline' && drawData.numberOfPoints < 2) {

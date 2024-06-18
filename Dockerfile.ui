@@ -23,6 +23,8 @@ COPY cvat-data/package.json /tmp/cvat-data/
 WORKDIR /tmp/
 RUN DISABLE_HUSKY=1 yarn --frozen-lockfile
 
+RUN yarn upgrade antd
+
 # Build source code
 COPY cvat-data/ /tmp/cvat-data/
 COPY cvat-core/ /tmp/cvat-core/

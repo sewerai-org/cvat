@@ -192,7 +192,7 @@ function BrushTools(props: Props): React.ReactPortal | null {
 
         const updateEditableState = (e: Event): void => {
             const evt = e as CustomEvent;
-            if (evt.type === 'canvas.editstart' && evt.detail.state) {
+            if (evt.type === 'canvas.editstart' && evt.detail?.state?.shapeType === ShapeType.MASK) {
                 setEditableState(evt.detail.state);
             } else if (editableState) {
                 setEditableState(null);
@@ -207,7 +207,7 @@ function BrushTools(props: Props): React.ReactPortal | null {
             canvasInstance.html().addEventListener('canvas.drawstart', showToolset);
             canvasInstance.html().addEventListener('canvas.editstart', showToolset);
             canvasInstance.html().addEventListener('canvas.editstart', updateEditableState);
-            canvasInstance.html().addEventListener('canvas.editdone', updateEditableState);
+            canvasInstance.html().addEventListener('canvas.edited', updateEditableState);
         }
 
         return () => {
@@ -219,7 +219,7 @@ function BrushTools(props: Props): React.ReactPortal | null {
                 canvasInstance.html().removeEventListener('canvas.drawstart', showToolset);
                 canvasInstance.html().removeEventListener('canvas.editstart', showToolset);
                 canvasInstance.html().removeEventListener('canvas.editstart', updateEditableState);
-                canvasInstance.html().removeEventListener('canvas.editdone', updateEditableState);
+                canvasInstance.html().removeEventListener('canvas.edited', updateEditableState);
             }
         };
     }, [visible, editableState, currentTool]);
@@ -309,16 +309,8 @@ function BrushTools(props: Props): React.ReactPortal | null {
                         className='cvat-brush-tools-brush-size'
                         value={brushSize}
                         min={MIN_BRUSH_SIZE}
-                        formatter={(val: number | undefined) => {
-                            if (val) return `${val}px`;
-                            return '';
-                        }}
-                        parser={(val: string | undefined): number => {
-                            if (val) return +val.replace('px', '');
-                            return 0;
-                        }}
-                        onChange={(value: number) => {
-                            if (Number.isInteger(value) && value >= MIN_BRUSH_SIZE) {
+                        onChange={(value: number | null) => {
+                            if (typeof value === 'number' && Number.isInteger(value) && value >= MIN_BRUSH_SIZE) {
                                 setBrushSize(value);
                             }
                         }}
