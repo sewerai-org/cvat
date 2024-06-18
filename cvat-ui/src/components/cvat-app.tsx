@@ -15,10 +15,10 @@ import { DisconnectOutlined } from '@ant-design/icons';
 import Space from 'antd/lib/space';
 import Text from 'antd/lib/typography/Text';
 import ReactMarkdown from 'react-markdown';
-import 'antd/dist/antd.css';
-import mixpanel from 'mixpanel-browser';
+import 'antd/dist/reset.css';
 
 import LogoutComponent from 'components/logout-component';
+import mixpanel from 'mixpanel-browser';
 import LoginPageContainer from 'containers/login-page/login-page';
 import LoginWithTokenComponent from 'components/login-with-token/login-with-token';
 import RegisterPageContainer from 'containers/register-page/register-page';

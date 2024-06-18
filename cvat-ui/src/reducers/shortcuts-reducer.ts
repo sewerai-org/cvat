@@ -299,12 +299,6 @@ const defaultKeyMap = ({
         sequences: ['left'],
         action: 'keydown',
     },
-    PLAY_PAUSE: {
-        name: 'Play/pause',
-        description: 'Start/stop automatic changing frames',
-        sequences: ['space'],
-        action: 'keydown',
-    },
     FOCUS_INPUT_FRAME: {
         name: 'Focus input frame',
         description: 'Focus on the element to change the current frame',
@@ -339,7 +333,7 @@ const defaultKeyMap = ({
     SWITCH_LABEL: {
         name: 'Switch label',
         description: 'Changes a label for an activated object or for the next drawn object if no objects are activated',
-        sequences: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].map((val: string): string => `ctrl+${val}`),
+        sequences: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
         action: 'keydown',
     },
     TILT_UP: {
@@ -424,6 +418,12 @@ const defaultKeyMap = ({
         name: 'Decrease brush size',
         description: 'Decrease the size of the paintbrush the mask brush tools',
         sequences: [']'],
+        action: 'keydown',
+    },
+    CHANGE_WORKSPACE: {
+        name: 'Change workspace',
+        description: 'Change workspace to next workspace type in list',
+        sequences: ['shift+w'],
         action: 'keydown',
     },
 } as any) as KeyMap;
