@@ -71,8 +71,9 @@ function LabelsListComponent(): JSX.Element {
     const handlers = {
         SWITCH_LABEL: (event: KeyboardEvent | undefined, shortcut: string) => {
             if (event) event.preventDefault();
-            const labelID = keyToLabelMapping[shortcut.split('+')[1].trim()];
+            const labelID = keyToLabelMapping[shortcut];
             const label = labels.filter((_label: any) => _label.id === labelID)[0];
+            console.log(`Label ID: ${labelID}/${label}`);
             if (Number.isInteger(labelID) && label) {
                 if (Number.isInteger(activatedStateID)) {
                     const activatedState = states.filter((state: any) => state.clientID === activatedStateID)[0];

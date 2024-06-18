@@ -121,7 +121,6 @@ function ObjectItemComponent(props: Props): JSX.Element {
                     removeShortcut={normalizedKeyMap.DELETE_OBJECT}
                     changeColorShortcut={normalizedKeyMap.CHANGE_OBJECT_COLOR}
                     sliceShortcut={normalizedKeyMap.SWITCH_SLICE_MODE}
-                    changeLabelShortcut={normalizedKeyMap.CHANGE_ITEM_LABEL}
                     changeLabel={changeLabel}
                     changeColor={changeColor}
                     copy={copy}

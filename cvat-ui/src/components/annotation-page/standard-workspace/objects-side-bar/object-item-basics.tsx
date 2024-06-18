@@ -37,7 +37,6 @@ interface Props {
     toForegroundShortcut: string;
     removeShortcut: string;
     sliceShortcut: string;
-    changeLabelShortcut: string;
     changeColor(color: string): void;
     changeLabel(label: any): void;
     copy(): void;
@@ -73,7 +72,6 @@ function ItemTopComponent(props: Props): JSX.Element {
         toForegroundShortcut,
         removeShortcut,
         sliceShortcut,
-        changeLabelShortcut,
         isGroundTruth,
         changeColor,
         changeLabel,
@@ -107,7 +105,7 @@ function ItemTopComponent(props: Props): JSX.Element {
                 </Text>
             </Col>
             <Col span={12}>
-                <CVATTooltip title={`Change current label ${changeLabelShortcut}`}>
+                <CVATTooltip title='Change current label'>
                     <LabelSelector
                         disabled={readonly || shapeType === ShapeType.SKELETON}
                         size='small'
