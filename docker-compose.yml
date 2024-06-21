@@ -104,7 +104,6 @@ services:
       - cvat_data:/home/django/data
       - cvat_keys:/home/django/keys
       - cvat_logs:/home/django/logs
-      - cvat_share:/home/django/share:ro
     networks:
       cvat:
         aliases:
@@ -379,7 +378,7 @@ volumes:
   cvat_share:
     driver_opts:
       type: none
-      device: /home/ubuntu/new_cvat/sewerai_prod
+      device: /home/ubuntu/cvat/sewerai_prod
       o: bind
   cvat_inmem_db:
   cvat_events_db:
