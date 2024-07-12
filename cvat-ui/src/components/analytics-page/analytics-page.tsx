@@ -5,18 +5,20 @@
 import './styles.scss';
 
 import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { useLocation, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Row, Col } from 'antd/lib/grid';
 import Tabs from 'antd/lib/tabs';
 import Title from 'antd/lib/typography/Title';
 import notification from 'antd/lib/notification';
+import moment from 'moment';
 import { useIsMounted } from 'utils/hooks';
 import { Project, Task } from 'reducers';
 import {
     AnalyticsReport, Job, RQStatus, getCore,
 } from 'cvat-core-wrapper';
-import moment from 'moment';
+import { updateJobAsync } from 'actions/jobs-actions';
 import CVATLoadingSpinner from 'components/common/loading-spinner';
 import GoBackButton from 'components/common/go-back-button';
 import AnalyticsOverview, { DateIntervals } from './analytics-performance';
@@ -78,12 +80,14 @@ function readInstanceId(type: InstanceType): number {
 type InstanceType = 'project' | 'task' | 'job';
 
 function AnalyticsPage(): JSX.Element {
+    const dispatch = useDispatch();
     const location = useLocation();
 
     const requestedInstanceType: InstanceType = readInstanceType(location);
     const requestedInstanceID = readInstanceId(requestedInstanceType);
 
     const [activeTab, setTab] = useState(getTabFromHash());
+
     const [instanceType, setInstanceType] = useState<InstanceType | null>(null);
     const [instance, setInstance] = useState<Project | Task | Job | null>(null);
     const [analyticsReport, setAnalyticsReport] = useState<AnalyticsReport | null>(null);
@@ -221,21 +225,13 @@ function AnalyticsPage(): JSX.Element {
         });
     }, [requestedInstanceType, requestedInstanceID, timePeriod]);
 
-    const onJobUpdate = useCallback((job: Job): void => {
+    const onJobUpdate = useCallback((job: Job, data: Parameters<Job['save']>[0]): void => {
         setFetching(true);
-
-        job.save()
-            .catch((error: Error) => {
-                notification.error({
-                    message: 'Could not update the job',
-                    description: error.toString(),
-                });
-            })
-            .finally(() => {
-                if (isMounted()) {
-                    setFetching(false);
-                }
-            });
+        dispatch(updateJobAsync(job, data)).finally(() => {
+            if (isMounted()) {
+                setFetching(false);
+            }
+        });
     }, []);
 
     const onTabKeyChange = useCallback((key: string): void => {

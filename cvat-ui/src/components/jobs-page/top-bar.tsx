@@ -6,9 +6,8 @@ import React, { useState } from 'react';
 import { Col, Row } from 'antd/lib/grid';
 import Input from 'antd/lib/input';
 
+import { JobsQuery } from 'reducers';
 import dimensions from 'utils/dimensions';
-import { CombinedState, JobsQuery } from 'reducers';
-import { Job } from 'cvat-core/src/session';
 import { SortingComponent, ResourceFilterHOC, defaultVisibility } from 'components/resource-sorting-filtering';
 import Button from 'antd/lib/button';
 import { useSelector } from 'react-redux';
