@@ -102,7 +102,7 @@ const defaultKeyMap = ({
     DELETE_OBJECT: {
         name: 'Delete object',
         description: 'Delete an active object. Use shift to force delete of locked objects',
-        sequences: ['del', 'shift+del'],
+        sequences: ['x', 'shift+x'],
         action: 'keydown',
     },
     TO_BACKGROUND: {

@@ -661,7 +661,7 @@ CVAT_BASE_URL = os.getenv('CVAT_BASE_URL', f'http://{CVAT_HOST}:8080').rstrip('/
 CLICKHOUSE = {
     'events': {
         'NAME': os.getenv('CLICKHOUSE_DB', 'cvat'),
-        'HOST': os.getenv('CLICKHOUSE_HOST', 'localhost'),
+        'HOST': os.getenv('CLICKHOUSE_HOST', 'clickhouse'),
         'PORT': os.getenv('CLICKHOUSE_PORT', 8123),
         'USER': os.getenv('CLICKHOUSE_USER', 'user'),
         'PASSWORD': os.getenv('CLICKHOUSE_PASSWORD', 'user'),

@@ -164,7 +164,9 @@ function AnnotationMenuComponent(): JSX.Element {
                 ),
                 className: 'cvat-modal-confirm-remove-annotation',
                 onOk: () => {
-                    dispatch(removeAnnotationsAsyncAction(removeFrom, removeUpTo, removeOnlyKeyframes));
+                    dispatch(
+                        removeAnnotationsAsyncAction(removeFrom as number, removeUpTo as number, removeOnlyKeyframes),
+                    );
                 },
                 okButtonProps: {
                     type: 'primary',

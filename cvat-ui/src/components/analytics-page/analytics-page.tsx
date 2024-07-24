@@ -5,7 +5,6 @@
 import './styles.scss';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useLocation, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Row, Col } from 'antd/lib/grid';
@@ -21,6 +20,7 @@ import {
 import { updateJobAsync } from 'actions/jobs-actions';
 import CVATLoadingSpinner from 'components/common/loading-spinner';
 import GoBackButton from 'components/common/go-back-button';
+import { useDispatch } from 'react-redux';
 import AnalyticsOverview, { DateIntervals } from './analytics-performance';
 import TaskQualityComponent from './task-quality/task-quality-component';
 
@@ -81,6 +81,7 @@ type InstanceType = 'project' | 'task' | 'job';
 
 function AnalyticsPage(): JSX.Element {
     const location = useLocation();
+    const dispatch = useDispatch();
 
     const requestedInstanceType: InstanceType = readInstanceType(location);
     const requestedInstanceID = readInstanceId(requestedInstanceType);

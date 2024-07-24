@@ -16,6 +16,7 @@ import {
 } from 'cvat-core-wrapper';
 import logger, { EventScope } from 'cvat-logger';
 import { getCVATStore } from 'cvat-store';
+// @ts-ignore
 import mixpanel from 'mixpanel-browser';
 
 import {
@@ -1037,7 +1038,6 @@ export function saveAnnotationsAsync(): ThunkAction {
     return async (dispatch: ThunkDispatch): Promise<void> => {
         const { jobInstance, frame } = receiveAnnotationsParameters();
         const hasUnsavedChanges = await jobInstance.annotations.hasUnsavedChanges();
-
 
         dispatch({
             type: AnnotationActionTypes.SAVE_ANNOTATIONS,

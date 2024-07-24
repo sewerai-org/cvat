@@ -17,6 +17,7 @@ import Text from 'antd/lib/typography/Text';
 import ReactMarkdown from 'react-markdown';
 
 import LogoutComponent from 'components/logout-component';
+// @ts-ignore
 import mixpanel from 'mixpanel-browser';
 import LoginPageContainer from 'containers/login-page/login-page';
 import LoginWithTokenComponent from 'components/login-with-token/login-with-token';

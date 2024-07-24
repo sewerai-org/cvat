@@ -11,6 +11,7 @@ import { Row, Col } from 'antd/lib/grid';
 import Spin from 'antd/lib/spin';
 import Result from 'antd/lib/result';
 import notification from 'antd/lib/notification';
+// @ts-ignore
 import mixpanel from 'mixpanel-browser';
 
 import { getInferenceStatusAsync } from 'actions/models-actions';
@@ -65,14 +66,12 @@ function TaskPageComponent(): JSX.Element {
         receieveTask().finally(() => {
             setFetchingTask(false);
         });
-        dispatch(getInferenceStatusAsync());
-        mounted.current = true;
-        mixpanel.track('Opened task page', {
-            taskId: id,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        dispatch(getInferenceStatusAsync()).then((r) => {
+            mixpanel.track('Opened task page', {
+                taskId: id,
+            });
         });
-        return () => {
-            mounted.current = false;
-        };
     }, []);
 
     useEffect(() => {

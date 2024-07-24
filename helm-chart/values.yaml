@@ -322,7 +322,7 @@ nuclio:
 
 analytics:
   # Set clickhouse.enabled to false if you disable analytics or use an external database
-  enabled: true
+  enabled: false
   clickhouseDb: ${CLICKHOUSE_DB}
   clickhouseUser: ${CLICKHOUSE_USER}
   clickhousePassword: ${CLICKHOUSE_PASSWORD}
