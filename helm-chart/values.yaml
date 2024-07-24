@@ -321,11 +321,13 @@ nuclio:
 #      password: somepass
 
 analytics:
+  # Set clickhouse.enabled to false if you disable analytics or use an external database
   enabled: true
   clickhouseDb: ${CLICKHOUSE_DB}
   clickhouseUser: ${CLICKHOUSE_USER}
   clickhousePassword: ${CLICKHOUSE_PASSWORD}
   clickhouseHost: ${CLICKHOUSE_HOST}
+  clickhousePort: 8123
 
 vector:
   envFrom:
@@ -347,19 +349,22 @@ vector:
     tag: "0.26.0-alpine"
 
 clickhouse:
+  # Set to false in case of external db usage
+  enabled: false
   shards: 1
   replicaCount: 1
   extraEnvVarsSecret: cvat-analytics-secret
   initdbScriptsSecret: cvat-clickhouse-init
   auth:
-    username: ${CLICKHOUSE_USER}
+    username: user
     existingSecret: cvat-analytics-secret
-    existingSecretKey: ${CLICKHOUSE_PASSWORD}
+    existingSecretKey: CLICKHOUSE_PASSWORD
   # Consider enabling zookeeper if a distributed configuration is used
   zookeeper:
     enabled: false
 
 grafana:
+  envFromSecret: cvat-analytics-secret
   datasources:
     datasources.yaml:
       apiVersion: 1
@@ -373,6 +378,7 @@ grafana:
           server: ${CLICKHOUSE_HOST}
           username: ${CLICKHOUSE_USER}
           tlsSkipVerify: false
+          protocol: http
         secureJsonData:
           password: ${CLICKHOUSE_PASSWORD}
         editable: false

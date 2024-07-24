@@ -51,8 +51,8 @@ function RightGroup(props: Props): JSX.Element {
 
     const openGuide = useCallback(() => {
         const PADDING = Math.min(window.screen.availHeight, window.screen.availWidth) * 0.4;
-        jobInstance.guide().then((guide: any) => {
-            if (guide?.markdown) {
+        jobInstance.guide().then((guide) => {
+            if (guide) {
                 Modal.info({
                     icon: null,
                     width: window.screen.availWidth - PADDING,
@@ -158,14 +158,14 @@ function RightGroup(props: Props): JSX.Element {
                     >
                         <Icon component={GuideIcon} />
                     Guide
-                    </Button>
-                )}
-                <Button
-                    type='link'
-                    className='cvat-annotation-header-info-button cvat-annotation-header-button'
-                    onClick={showStatistics}
-                >
-                    <InfoCircleOutlined />
+                </Button>
+            )}
+            <Button
+                type='link'
+                className='cvat-annotation-header-info-button cvat-annotation-header-button'
+                onClick={showStatistics}
+            >
+                <InfoCircleOutlined />
                 Info
                 </Button>
                 <Button
@@ -177,40 +177,39 @@ function RightGroup(props: Props): JSX.Element {
                 >
                     <Icon component={FilterIcon} />
                 Filters
-                </Button>
-                <div>
-                    <CVATTooltip overlay={`Change Workspace: ${changeWorkspaceShortcut}`}>
-                        <Select
-                            popupClassName='cvat-workspace-selector-dropdown'
-                            className='cvat-workspace-selector'
-                            onChange={changeWorkspace}
-                            value={workspace}
-                        >
-                            {Object.values(Workspace).map((ws) => {
-                                if (jobInstance.dimension === DimensionType.DIMENSION_3D) {
-                                    if (ws === Workspace.STANDARD) {
-                                        return null;
-                                    }
-                                    return (
-                                        <Select.Option disabled={ws !== Workspace.STANDARD3D} key={ws} value={ws}>
-                                            {ws}
-                                        </Select.Option>
-                                    );
-                                }
-                                if (ws !== Workspace.STANDARD3D) {
-                                    return (
-                                        <Select.Option key={ws} value={ws}>
-                                            {ws}
-                                        </Select.Option>
-                                    );
-                                }
+            </Button>
+            <div>
+                <CVATTooltip overlay={`Change Workspace: ${changeWorkspaceShortcut}`}>
+                <Select
+                    popupClassName='cvat-workspace-selector-dropdown'
+                    className='cvat-workspace-selector'
+                    onChange={changeWorkspace}
+                    value={workspace}
+                >
+                    {Object.values(Workspace).map((ws) => {
+                        if (jobInstance.dimension === DimensionType.DIMENSION_3D) {
+                            if (ws === Workspace.STANDARD) {
                                 return null;
-                            })}
-                        </Select>
-                    </CVATTooltip>
-                </div>
-            </Col>
-        </>
+                            }
+                            return (
+                                <Select.Option disabled={ws !== Workspace.STANDARD3D} key={ws} value={ws}>
+                                    {ws}
+                                </Select.Option>
+                            );
+                        }
+                        if (ws !== Workspace.STANDARD3D) {
+                            return (
+                                <Select.Option key={ws} value={ws}>
+                                    {ws}
+                                </Select.Option>
+                            );
+                        }
+                        return null;
+                    })}
+                </Select>
+                </CVATTooltip>
+            </div>
+        </Col>
     );
 }
 
