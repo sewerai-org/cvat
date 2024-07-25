@@ -3,7 +3,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-import React, { useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Col } from 'antd/lib/grid';
 import Icon, { InfoCircleOutlined } from '@ant-design/icons';
 import Select from 'antd/lib/select';
@@ -52,7 +52,7 @@ function RightGroup(props: Props): JSX.Element {
     const openGuide = useCallback(() => {
         const PADDING = Math.min(window.screen.availHeight, window.screen.availWidth) * 0.4;
         jobInstance.guide().then((guide: any) => {
-            if (guide?.markdown) {
+            if (guide) {
                 Modal.info({
                     icon: null,
                     width: window.screen.availWidth - PADDING,

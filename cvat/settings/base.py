@@ -239,7 +239,7 @@ IAM_OPA_DATA_URL = f'{IAM_OPA_HOST}/v1/data'
 LOGIN_URL = 'rest_login'
 LOGIN_REDIRECT_URL = '/'
 
-OBJECTS_NOT_RELATED_WITH_ORG = ['user', 'function', 'request', 'server',]
+OBJECTS_NOT_RELATED_WITH_ORG = ['user', 'lambda_function', 'lambda_request', 'server', 'request']
 
 # ORG settings
 ORG_INVITATION_CONFIRM = 'No'
@@ -636,6 +636,7 @@ SPECTACULAR_SETTINGS = {
         'SortingMethod': 'cvat.apps.engine.models.SortingMethod',
         'WebhookType': 'cvat.apps.webhooks.models.WebhookTypeChoice',
         'WebhookContentType': 'cvat.apps.webhooks.models.WebhookContentTypeChoice',
+        'RequestStatus': 'cvat.apps.engine.serializers.RequestStatus',
     },
 
     # Coercion of {pk} to {id} is controlled by SCHEMA_COERCE_PATH_PK. Additionally,
@@ -660,7 +661,7 @@ CVAT_BASE_URL = os.getenv('CVAT_BASE_URL', f'http://{CVAT_HOST}:8080').rstrip('/
 CLICKHOUSE = {
     'events': {
         'NAME': os.getenv('CLICKHOUSE_DB', 'cvat'),
-        'HOST': os.getenv('CLICKHOUSE_HOST', 'localhost'),
+        'HOST': os.getenv('CLICKHOUSE_HOST', 'clickhouse'),
         'PORT': os.getenv('CLICKHOUSE_PORT', 8123),
         'USER': os.getenv('CLICKHOUSE_USER', 'user'),
         'PASSWORD': os.getenv('CLICKHOUSE_PASSWORD', 'user'),

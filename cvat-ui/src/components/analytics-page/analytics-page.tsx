@@ -11,14 +11,16 @@ import { Row, Col } from 'antd/lib/grid';
 import Tabs from 'antd/lib/tabs';
 import Title from 'antd/lib/typography/Title';
 import notification from 'antd/lib/notification';
+import moment from 'moment';
 import { useIsMounted } from 'utils/hooks';
 import { Project, Task } from 'reducers';
 import {
     AnalyticsReport, Job, RQStatus, getCore,
 } from 'cvat-core-wrapper';
-import moment from 'moment';
+import { updateJobAsync } from 'actions/jobs-actions';
 import CVATLoadingSpinner from 'components/common/loading-spinner';
 import GoBackButton from 'components/common/go-back-button';
+import { useDispatch } from 'react-redux';
 import AnalyticsOverview, { DateIntervals } from './analytics-performance';
 import TaskQualityComponent from './task-quality/task-quality-component';
 
@@ -79,6 +81,7 @@ type InstanceType = 'project' | 'task' | 'job';
 
 function AnalyticsPage(): JSX.Element {
     const location = useLocation();
+    const dispatch = useDispatch();
 
     const requestedInstanceType: InstanceType = readInstanceType(location);
     const requestedInstanceID = readInstanceId(requestedInstanceType);
@@ -221,21 +224,13 @@ function AnalyticsPage(): JSX.Element {
         });
     }, [requestedInstanceType, requestedInstanceID, timePeriod]);
 
-    const onJobUpdate = useCallback((job: Job): void => {
+    const onJobUpdate = useCallback((job: Job, data: Parameters<Job['save']>[0]): void => {
         setFetching(true);
-
-        job.save()
-            .catch((error: Error) => {
-                notification.error({
-                    message: 'Could not update the job',
-                    description: error.toString(),
-                });
-            })
-            .finally(() => {
-                if (isMounted()) {
-                    setFetching(false);
-                }
-            });
+        dispatch(updateJobAsync(job, data)).finally(() => {
+            if (isMounted()) {
+                setFetching(false);
+            }
+        });
     }, []);
 
     const onTabKeyChange = useCallback((key: string): void => {
