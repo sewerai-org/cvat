@@ -5,7 +5,7 @@
 
 import { AnyAction } from 'redux';
 
-import { Project, Task, ServerError, RequestError } from 'cvat-core-wrapper';
+import { ServerError, RequestError } from 'cvat-core-wrapper';
 import { AuthActionTypes } from 'actions/auth-actions';
 import { FormatsActionTypes } from 'actions/formats-actions';
 import { ModelsActionTypes } from 'actions/models-actions';
